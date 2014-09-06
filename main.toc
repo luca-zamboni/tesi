@@ -29,6 +29,6 @@
 \contentsline {subsection}{\numberline {3.2.5}Analisi prestazioni}{18}{subsection.3.2.5}
 \contentsline {section}{\numberline {3.3}Distanza dal cartello}{19}{section.3.3}
 \contentsline {subsection}{\numberline {3.3.1}Analisi ambiente}{19}{subsection.3.3.1}
-\contentsline {subsection}{\numberline {3.3.2}}{19}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.2}L' algoritmo}{19}{subsection.3.3.2}
 \contentsline {chapter}{\numberline {4}Esperimenti}{20}{chapter.4}
 \contentsline {chapter}{\numberline {5}Conclusioni}{21}{chapter.5}
