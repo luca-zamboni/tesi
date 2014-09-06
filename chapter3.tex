@@ -1,0 +1,137 @@
+\chapter{Miglioramenti}
+
+In questo capitolo si espongono degli algoritmi per migliorare prestazioni e robustezza dell'algoritmo. Inoltre si propone un metodo per calcolare la distanza dal cartello.
+
+\section{Cambio Cartelli}
+
+	In questa sezione si analizza la problematica della distanza e si propone un metodo per risolverla.
+
+	\subsection{Analisi problematica}
+		Come analizzato nel precedente capitolo uno dei problemi principali \'e l'individuare il cartello in lontananza e riconoscere che tipo di cartello si tratta.
+		Essendo la risoluzione non troppo elevata (640x480) quando ci si allontana dalla fotocamera le figure sono sempre pi\'u piccole. Questo ovviamente ha delle ripercussioni sull' algoritmo.
+		Di seguito verranno proposti dei metodi per cercare di risolvere questa problematica.
+
+
+	\subsection{Cambio Cartelli}
+		Ora passiamo ad analizzare il problema del riconoscimento delle figura all' interno del cartello.\newline I cartelli in lontananza hanno una figura interna facilmente confondibile o addirittura non si riescono a riconoscere. Questo \'e dovuto al fatto che la risoluzione \'e bassa e quindi l'interno di un cartello presenta pochi pixel.
+		Immagine
+		Queste immagini sono l'interno di un cartello a distanza di 3 metri. Come si pu\'o vedere le due figure sono poco nitide e l'algoritmo ha un elevato tasso di errore nel riconoscerle perch\'e basta una differenza di pochissimi pixel per fallire il riconoscimento.
+		Per ovviare a questo inconveniente \'e stata cambiata la grafica dei cartelli.
+		\begin{figure}[!ht]
+			\centering
+			\includegraphics[width=0.3\textwidth]{img/cart1}
+			\includegraphics[width=0.3\textwidth]{img/cart2}
+			\includegraphics[width=0.3\textwidth]{img/cart3}
+			\caption{Nuovi cartelli}
+		\end{figure}
+
+	\subsection{Analisi nuovi cartelli}
+		Nella grafica dei nuovi cartelli \'e stato mantenuto il bordo nero e il fondo bianco che permetto di trovarli facilmente nell'immagine. \'E stato cambiato invece la grafica interna come si pu\'o vedere nella figura 3.1. In centro alla parte bianca del cartello c'\'e una griglia di 3x3  quadrati di uguali dimensioni dei quali solo alcuni sono neri. Il metodo utilizzato per decidere se un quadrato \'e nero o bianco \'e che si cerca di massimizzare la differenza fra i vari cartelli. Nel nostro caso i tre cartelli hanno una differenza tra uno e l'altro del 66\%. Cio significa che se si prendono due cartelli solo 3 quadrati su sei della griglia sono colorati nella stessa maniera.
+		\newline \'e stato scelto questo tipo di cartello perch\'e ogni segnale differsice molto da un altro segnale e quindi \'e difficile confondere i due anche se ci sono errori di qualche pixel dovuti alla scarsa risoluzione.
+
+	\subsection{Implementazione nuovo riconoscimento}
+		L' algoritmo per l'implementazione \'e totalmente diverso da quello precedente. Mentre quello preesistente si avvaleva del filtri di canny e cercava le forme geometriche dentro il cartello queto utilizza un pi\'u semplice pattern matching ottenendo sia risultati migliori sotto forma di prestazioni che di percentuale di cartelli riconosciuti.\newline
+		La funzione prende in input la porzione di immagine interna al cartello (ROI) in scala di grigi e il vettore contenente i cartelli conosciuti. Per prima la porzione all'interno dell immagine viene convertita in bianco e nero utilizzando la funzione di openCV cv::threshold(). Il livello di threshold \'e deciso facendo la media di livello di grigio di tutta l'immagine. Il vantaggio di avenre un livello ti threshold variabile e non fisso \'e che se l'immagine viene presa in un ambiente scuro esso si alza automaticamente discriminando il bianco dal nero come nell'immagine successiva.
+		Immagine.
+		\newline A questo punto l'immagine viene ingrandita a una dimensione nota e si tagliano i bordi neri che potrebbero esserci come rimanenze del bordo del cartello e si taglia anche la parte bianca attorno alla griglia di modo che rimanga solamente la figura interna. Per tagliare i bordi neri si prendono in considerazione i pixel esterni che formano la cornice. Se nella cornice \'e presente almeno un pixel nero allora la si elimina e si prende in considerazione la nuova cornice eseguendo il passo precedente fintanto che la cornice \'e formata da soli punti bianchi. Ora si taglia la parte bianca attorno alla figura. Per eliminarla si esegue un procedimento analogo solo che in questo caso si taglia il bordo solo se la cornice ha i pixel colorati tutti di bianco. Il taglio dei bordi consente di estrarre la figura interna al cartello ma serve anche come filtro a falsi cartelli riconosciuti come tali dai passi precedenti dell'algoritmo. Un cartello non \'e tale con molta probabilit\'a verr\'a tagliato praticamente tutto restituendo solo un pixel quando si taglia il nero perch\'e a meno che non abbia bordi bianchi ecco continuer\'a a trovare del nero sul bordo fino a superare la grandezza minima dell'interno del cartello impostata al 70\% della larghezza dell'algoritmo.
+		\newline
+		Adesso si portano sia i cartelli che l'immagine interna al cartello a una grandezza uguale.
+		A questo punto si ha solo la griglia interna al cartello e si passa all'effettivo riconoscimento di esso. Per identificare la griglia interna facendo un semplice pattern matching fra cartelli e parte interna che cartello che vogliamo riconoscere. Per fare pattern matching basta fare uno xor pixel a pixel tra le due immagini da confrontare. Se un cartello ha una percentuale di pixel corrispondenti pi\'u alta degli altri e pi\'u alta di una soglia impostata del 70\% verr\'a riconosciuto come cartello corrispondente.
+		
+
+\section{Vanishing Point}
+
+	Qualcosa forse altrimenti nnt
+
+	\subsection{Analisi ambiente}
+
+		I cartelli vengono sempre posizionati alla fine di un rettilineo e prima di una curva e mai durante o appena dopo di essa. Cosi facendo le immagini che dovranno essere analizzate saranno pi\'u nitide per il semplice fatto che la telecamera sta facendo meno movimento laterale e le immagini risultano meno 'mosse' di conseguenza meno disturbate.\newline
+		Analizzando i frame catturati dalla fotocamera frontale si pu\'o notare che la posizione dei cartelli all' interno dell' immagine \'e abbastanza fissa. Infatti in quasi tutte le immagini i cartelli si trovano sulla linea dell' orizzonte dato che essi sono fissi su di esso. Pi\'u ci si allontana e pi\'u' i cartelli sono fissi sull orizzonte.
+		\begin{figure}[!ht]
+			\centering
+			\includegraphics[width=0.49\textwidth]{img/wherefind}
+			\includegraphics[width=0.49\textwidth]{img/wherefind2}
+			\caption{In rosso la linea dell'orizzonte e in verde la regione dell'immagine dove dovrebbe essere cercato il cartello}
+		\end{figure}
+
+
+	\subsection{Punto sull'orizzonte}
+
+		Nella sezione precedente \'e stato detto che il cartello \'e conveniente cercarlo prima sulla linea dell'orizzonte. Ma come fare riconoscere l' orizzonte? La soluzione \'e l' implementazione di un algoritmo che calcola il punto sull'orizzonte detto anche Vanishing Point.
+		
+		Il vanishing point \'e un punto nell'immagine che \'e il risultato  dell' intersezione del prolungamento delle linee parallele sul piano di immagine. Per esempio le linee bianche che stanno ai bordi di una strada sono parallele ma nell'immagine se si prolungano si incontreranno sulla linea dell' orizzonte. Sfruttando questo principio \'e possibile calcolare il Vanishing Point.
+		\begin{figure}[!ht]
+			\centering
+			\includegraphics[width=0.6\textwidth]{img/vanish}
+			\caption{In rosso le linee che dovrebbero essere rilevate e in blu l'area dove approssimativamente esse si incontrano}
+		\end{figure}
+
+	\subsection{Calcolo Vanishing Point}
+		Come detto in precedenza per calcolare il Vanishing Point servono le linee ai bordi della strada quindi per prima cosa bisogna estrarre i segmenti dall' immagine. Per fare ci\'o \'e stata usata la funzione lsd() (line segment detection) che prende in input l'immagine e restituisce un array di \textbf{double}.
+		Gli elementi dell' array vanno presi 7 alla volta e vanno utilizzati come segue:
+		\begin{enumerate}
+			\item \textbf{x} del punto di partenza del segmento nell' immagine
+			\item \textbf{y} del punto di partenza del segmento
+			\item \textbf{x} del punto di arrivo del segmento
+			\item \textbf{y} del punto di arrivo del segmento
+			\item \textbf{w} lunghezza del segmento
+			\item \textbf{p} p \'e la precisione con cui \'e calcolato il segmento
+			\item \textbf{logNfa}
+		\end{enumerate}
+		Successivamente per ogni segmento si calcola il punto medio di esso e la pendenza. I segmenti successivamente vengono filtrati.
+		I segmenti devono:
+		\begin{itemize}
+			\item Essere pi\'u lunghi di una certa lunghezza, impostata al 10\% della larghezza dell'immagine, altrimenti potrebbero essere solo rumore o oggetti al bordo della strada.
+			\item Avere una pendenza tra 10$^{\circ}$ e 70$^{\circ}$ questo perch\'e le linee orizzontali non vengono utilizzate e le linee verticali, cio\'e piu di 70$^{\circ}$, potrebbero essere segmenti non appartenenti alla strada per esempio un edificio.
+		\end{itemize}
+		\begin{figure}[!ht]
+			\centering
+			\includegraphics[width=0.6\textwidth]{img/vanishcalco}.
+			\caption{In nero si vedono i segmenti rilevati e filtrati}
+		\end{figure}
+
+		Adesso si deve determinare l'intersezione tra tutti i segmenti. Per calcolare l'intersezione tra due segmenti si calcola per ogni segmento la retta passante per esso e poi si calcola l'intersezione tra esse. Si scartano i punto di intersezione che escono dall'immagine. Per ogni intersezione si calcola anche un peso. Il peso \'e dato dal delle due lunghezze dei segmenti elevate al quadrato
+		\begin{align*}
+			weight = (seg1.width * seg2.width)^{2}
+		\end{align*}
+		Questo per assegnare un importanza maggiore all' intersezione di due segmenti pi\'u lunghi.
+		\begin{figure}[!ht]
+			\centering
+			\includegraphics[width=0.6\textwidth]{img/vanishcalco1}.
+			\caption{In bianco le intersezioni tra segmenti calcolate}
+		\end{figure}
+		Il Vanishing Point temporaneo \'e calcolato come la media pesata dei punti di intersezione calcolati in precedenza.
+		\begin{align*}
+			\sum\limits_{i \in intersezioni} i * \frac{i.weigth}{sommaWeigth}
+		\end{align*}
+		Infine per calcolare il Vanishing Point effettivo si fa la media con il Vanishing Point calcolato nell'immagine precedente.
+
+		\begin{figure}[!ht]
+			\centering
+			\includegraphics[width=0.4\textwidth]{img/vanishcalco2}
+			\hspace{7mm}
+			\includegraphics[width=0.4\textwidth]{img/vanishcalco4}
+			\caption{In rosso i Vanishing Point calcolati}
+		\end{figure}
+
+	\subsection{Implementazione}
+		L'algoritmo per il calcolo del punto sull'orizzonte viene chiamato prima di fare qualsiasi operazione sull' immagine. L'algoritmo una volta calcolato il punto sull'orizzonte controlla che essso sia nell'immagine perch\'e il punto sull'orizzonte potrebbe essere anche esterno ad essa. Se questo \'e esterno non si prende in considerazione altrimenti si taglia l'immagine nel suo intorno. Il taglio viene eseguito tenendo una percentuale di pixel rispetto alla larghezza dell' immagine. Questa percentuale \'e fissata al 60\% rispetto alla larghezza e anche all'altezza. Siccome il punto sull'orizzonte \'e quasi sempre calcolato nella parte alta come nella figura 3.2 la parte tagliata in altezza sar\'a quasi sempre minore al 60\% riducendo cos\'i la superfice da analizzare successivamente aumentando le prestazioni. \newline
+		Il calcolo del vanishing Point come vedremo nella prossima sezione ha un costo computazionale parecchio elevato di circa un secondo quindi \'e stato scelto di calcolarlo solo sulla prima immagine quando si arriva in rettilineo. Successivamente se si trova il cartello nell'intorno del punto sull'orizzonte allora si passa alla prossima immagine e su di esso non si ricalcola tenendo quello precedente, altrimenti si cerca il cartello in tutta l'immagine e si cercher\'a di ricalcolare il vanishing point nel prossimo frame.
+
+	\subsection{Analisi prestazioni}
+		Adesso passiamo ad analizzare le prestazioni dell'algoritmo per calcolare il punto sull'orizzonte. \newline
+		Per fare questi test sono state utilizzate delle immagini prese con il robot in movimento una di seguito all' altra partendo da una distanza dal cartello di 6 metri. La grandezza dei segnali \'e pari al lato corto di un foglio A4. Purtroppo le immagini sono state prese in laboratorio e non all'aperto su una strada per\'o il vanishing Point viene calcolato correttamente anche aiutato dalle righe del pavimento che sono parallele alla direzione del robot. Sono state fatte 9 prove con il robot in movimento a diverse velocit\'a. Prima \'e stato fatto cercare il cartello usando l'algoritmo spiegato precedentemente sul vanishing Point e poi senza calcolarlo. Quelo che \'e emerso \'e riportato nel grafico seguente.
+		Grafico.
+		Le velocit\'a di esecuzione diminuisce del TOT \% se si \'e gi\'a calcolato il punto sull'orizzonte. Invece se deve essere ancora calcolato il tempo di esecuzine aumenta parecchio. Infatti il tempo per calcolare il punto sull'orizzonte \'e di circa 1 secondo e quindi pesante per la nostra esecuzione dell'algoritmo. Per questo \'e stato scelto, come detto precedentemente, di calcolarlo sulla prima immagine e non su tutte a meno che il cartello non sia stato trovato allora si ricalcola.
+
+\section{Distanza dal cartello}
+	
+	Dopo aver riconosciuto il cartello per essere di aiuto a sapere il posizionamento del robot nel percorso bisogna calcolare la distanza da essi.
+	Di seguito si implementa un algoritmo per calcolare la distanza dal cartello individuato in precedenza.
+
+	\subsection{Analisi ambiente}
+
+		I passi precedenti dell' algoritmo individuano il cartello restituendo il i punti dell' rettangolo che lo contengono. Sapendo la grandezza dell' cartello a priori, si potrebbe ricavare la larghezza di esso e poi in funzione di essa si pu\'o sapere la distanza. Il problema per\'o \'e sempre la risoluzione della telecamera. Infatti dopo aver preso delle immagini sperimentali di cartelli posti a 2 e 3 metri si sono analizzate le larghezze in pixel dei due cartelli e si \'e notato che essi differivano di un pixel o addirittura in certi casi erano identiche.  Un diverso approccio sfrutta IPM (Inverse Perspective Mapping)
+		
+	\subsection{L' algoritmo}
+		

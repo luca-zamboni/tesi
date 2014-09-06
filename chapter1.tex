@@ -1,0 +1,50 @@
+\chapter{Panoramica generale}
+
+\section{Introduzione}
+
+\cite{Pan}
+
+	Negli ultimi anni si \'e sviluppata la necessit\'a di realizzare robot o macchine in grado di spostarsi autonomamente nell' ambiente senza bisogno dell' aiuto umano.
+	In questo progetto per riuscire a far muovere il robot nell' ambiente ci serviamo di due telecamere una frontale una laterale montate su di esso e di una linea nera sul superficie del pavimento.
+	La linea nera rappresenta il percorso che il robot deve riuscire seguire attraverso le due telecamere. Il robot conosce a priori il percorso e deve sapere esattamente dove si trova in esso. Ogni telecamera \'e collegata a una scheda Beaglebone che serve per l' elaborazione delle immagini. Entrambe le telecamere servono per riuscire a riconoscere la linea nera sul terreno e riuscire a guidare il robot attraverso il percorso. La telecamera frontale elabora le immagini riconoscendo il percorso e pianificando la strada da seguire. La telecamera laterale invece serve per sapere a che distanza \'e la linea e cerca di correggerne la traiettoria.
+	Inoltre si \'e deciso di aggiungere anche dei segnali lungo il percorso che servono per dare delle indicazioni al robot e anche per sapere esattamente in che parte del percorso esso si trova stimandone la distanza da essi.
+	In questo progetto si parte da un algoritmo gi\'a realizzato per riconoscere i segnali posizionati sul terreno e si propone un modo per migliorarne le prestazioni nella velocit\'a dell' elaborazione delle immagini, aumentare la precisione e la distanza a cui viene riconosciuto un segnale e infine stimare la distanza da esso.
+
+\section{Il progetto}
+	splittare l'introduzione
+
+\section{Algoritmo riconoscimento}
+
+	L' algoritmo di riconoscimento cartelli prende in input le immagini dallo streaming video della telecamera frontale. Esso deve elaborare ogni frame e riuscire a individuare se in essa \'e presente un cartello e in seguito riuscire a riconoscere di che tipo di cartello si tratti.
+	Dal momento che l'algoritmo deve essere eseguito su un corpo in movimento le decisioni devono essere prese alla svelta perch\'e basta un attimo di indecisione che il robot pu\'o uscire di strada. Questo impone che l'algoritmo deve avere un tempo di esecuzione abbastanza ristretto. Facendo un esempio se il robot si muovesse alla velocit\'a di 10 Km/h esso percorrerebbe poco meno di 3 m/s (2.7777 m/s). Quindi se l'algoritmo per riconoscere il cartello impiegasse un secondo, significherebbe che se un cartello \'e posizionato a meno di 3 metri allora esso viene riconosciuto  solo quando viene superato. Dunque si cerca di contrarre il pi\'u possibile il tempo di esecuzione dell' algoritmo. Oltre a questo bisogna che il riconoscimento del cartello sia robusto. Per robustezza si intende la capacit\'a di:
+		\begin{itemize}
+		\item Riconoscere il segnale a varie distanze sia da vicino che da lontano.
+		\item Individuare il cartello a diversi livelli di luminosit\'a. Questo perch\'e il robot deve essere in grado di guidare autonomamente sia di giorno, caratterizzato da un' intensa illuminazione, che di notte quando invece la luminosit\'a \'e scarsa.
+		\item Riuscire a riconoscere il segnale da varie angolature, attuando una trasformazione prospettica. Questo perch\'e mentre si \'e in moto non sempre si \'e perfettamente allineati con il cartello. 
+		\item Riuscire a filtrare le forme geometriche dei cartelli, tralasciando le altre. Se ad esempio in un'immagine sono presenti piu quadrati, individuare tra questi solo quelli relativi ai cartelli.
+	\end{itemize}
+
+\section{Motivazioni}
+	ahahahah ma che motivazione
+
+\section{Outline}
+	Nel secondo capitolo verr\'a descritto come lavora l'algoritmo esistente e verranno analizzate prestazioni e efficacia.
+	Nel terzo capitolo sono proposte soluzioni per migliorare l'algoritmo descritto nel capitolo precedente.
+	Nel quarto  capitolo invece sono esposti i dati raccolti delle prove sperimentali riguardo i nuovi cambiamenti. Nel quinto capitolo ci sono l'analisi dei dati del capitolo precedente e le conclusioni del progetto.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,96 @@
+\chapter{Analisi algoritmo esistente}
+
+In questo capitolo verr\'a analizzato il codice l'algoritmo esistente e verrano valutate prestazioni ed efficacia di esso.
+
+
+\section{Ambiente di sviluppo}
+
+	L' hardware utilizzato per il progetto \'e il seguente:
+	\begin{itemize}
+	\item Processore : AM335x 720MHz ARM Cortex-A8
+	\item RAM: 256 MB
+	\item Telecamera: WebCam 640 x 480 pixel
+	\end{itemize}
+
+	L' algoritmo per riconoscere i segnali ha la necessit\'a di elaborare le immagini provenienti da uno stream video. L' essendo che il codice viene eseguito su una scheda con processore non particolarmente potente e avendo a disposizione poca RAM le performance per questo algoritmo sono un aspetto fondamentale. Per questo motivo \'e stato scelto come linguaggio c++ che offre performance ottime. Inoltre viene utilizzata la libreria open source chiamata OpenCV che offre molte funzioni per l' elaborazione immagini e video e molto indicata per applicazioni real time. Inoltre OpenCV non obbliga nessuna restrizione sulla licenza del software.
+
+
+\section{I Cartelli}
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.3\textwidth]{img/cerchio}
+		\includegraphics[width=0.3\textwidth]{img/triangolo}
+		\caption{Cartelli riconosciuti}
+	\end{figure}
+	I cartelli individuati da questo algoritmo sono quelli rappresentati nelle figure 2.1.
+	Essi hanno un contorno nero su sfondo bianco con all'interno una figura che pu\'o essere un triangolo o un cerchio.
+	\'E stato scelto di usare un bordo nero per facilitare il riconoscimento del cartello. Questo perch\'e se fosse stato tutto bianco e nel'immagine ci fosse stato del bianco sullo sfondo del cartello nell'immagine sarebbe stato difficile se non impossibile distinguere il cartello. Invece cosi facendo si ha uno stacco netto con le figure sul retro del cartello. La larghezza della parte bianca del cartello ha una proporzione di $\tfrac{8}{5}$ rispetto al diametro del cerchio e alla base del trangolo.
+
+\section{Impostazione generale}
+
+	Passiamo adesso all' analisi dell' algoritmo esistente dicendo a grandi linee i principali passi di esecuzione che verranno analizzati successivamente. 
+	L'algoritmo prende in input un' immagine presa dallo streaming video della telecamera frontale. L'immagine \'e rappresentata con una matrice di pixel N x M (nel progetto tipicamente 640x480 pixel). La cella [i,j] contiene il colore del pixel corrispondente. 
+	Ad alto livello l'algoritmo esegue le seguenti operazioni:
+	\begin{itemize}
+		\item Individuazione dei cartelli nell' immagine nel nostro caso dei quadrati chiamati ROI (Region of Interest).
+		\item Deve eseguire una trasformazione prospetica delle ROI cio\'e se l'immagine \'e stata presa da una certa angolatura essa deve essere trasformata portandola ad una visualizzazione frontale .
+		\item Individuazione di un triangolo o di un cerchio all'interno dei quadrati cio\'e riconoscere il cartello scartando presunte figure non tali.
+	\end{itemize}
+	Di seguito passeremo ad analizzare nel dettaglio i passi dell'algoritmo.
+
+\subsection{Individuazione cartello}
+
+	Prima di procedere all' effettiva individuazione del cartello \'e necessario trasformare l'immagine proveniente dallo stream video da colorata a bianco e nero. Per fare tale operazione si utilizza la funzione di OpenCV cv:cvtColor(). Successivamente all' immagine  in scala di grigi si applica il filtro di Canny. Il filtro di Canny serve a individuare i bordi degli oggetti in un immagine. L'algoritmo di Canny a grandi linee funziona nel seguente modo: si passano due valori alla funzione che saranno poi le nostre soglie. Poi si passa ad analizzare punto per punto dell'immagine calcolandone il gradiente in esso.  Se il gradiente \'e:
+	\begin{itemize}
+		\item Inferiore alla soglia bassa, il punto \'e scartato;
+		\item Superiore alla soglia alta, il punto \'e accettato come parte di un contorno;
+		\item Compreso fra le due soglie, il punto \'e accettato solamente se contiguo ad un punto gi\'a precedentemente accettato.
+	\end{itemize}
+	Per eseguire il filtro di Canny all' immagine su utilizza l'omonima funzione cv::Canny() di OpenCV.
+	Una volta ottenuti i bordi essi si dilatano con la funzione cv::dilate() per eliminare eventuali buchi ai vertici.
+	Poi si utilizza la funzione cv::approxPolyDP() che prende in input i bordi e ricava i poligoni approssimati.
+	Da questi poi si tengono solo i poligoni che hanno 4 lati che siano convessi.
+	Dopo di che si fa un  filtraggio e si controlla che la differenza dei lati opposti sia entro un certo errore cio\'e che siano di lunghezza simile e si eliminano anhce eventuali duplicati.
+	I quadrati risultanti sono le nostre ROI (Region of interest) cio\'e i nostri presunti cartelli dove andare a cercare il simbolo all interno.
+
+\subsection{Trasformazione prospettica}
+
+	Dopo aver trovato i presunti cartelli bisogna eseguire una trasformazione prospettica. Essa consiste nel raddrizzare' il contenuto della ROI per rendere accurata la fase successiva cio\'e riconoscere la forma all' interno del cartello.
+	Per effettuare la trasformazione si usa la funzione cv::getPerspectiveTransform() che calcola la matrice di trasformazione del sistema. Poi viene usata la funzione cv::warpPerspective() che effettua l' effettiva trasformazione.
+	Immagine esempio
+
+\subsection{Riconoscimento cartello}
+
+	Come ultimo passo bisogna determinare di che tipo di cartello si tratta oppure scartarlo, se esso era un falso cartello cio\'e una forma geometrica simile al cartello e riconosciuto come tale dai punti precedenti dell'algoritmo. Questo passo prende in input le ROI riconosciute ed elaborate in precedenza. Per riuscire a riconoscere i cerchi e i triangoli si usa una tecnica simile a quella per ricavare i quadrati dalla foto originale. In entrambe si usa il filtro di Canny per ricavare i bordi della figura. Una volta ricavati i bordi le strade si dividono per le due forme. Per riconoscere il triangolo si usa la funzione cv::approxPolyDP() come per riconoscere i quadrati per\'o in questo caso ovviamente si ricavano solo i poligoni con 3 facce. Invece per riconoscere il cerchio si usa la funzione cv::HoughCircle(). Questa funzione \'e contenuta nella libreria OpenCV e prende semlicemente in input l'immagine e restituisce i contorni che formano un cerchio entro un certo errore. Poi per entrambi i casi si controlla che la figura sia circa al centro del quadrato del cartello entro un certo scarto, altrimenti si scarta e si controlla pure che abbia le proporzioni giuste cio\'e la larghezza del cartello \'e $\frac{8}{5}$ della larghezza della figura interna anche qui entro un certo errore. \newline Arrivati a questo punto si \'e riusciti a determinare il tipo di cartello a cui appartiene la ROI passata in input. 
+
+\section{Analisi dati algoritmo}
+
+	Adesso passiamo all' analisi prestazioni e precisione algoritmo.\newline
+	Per prima cosa analizziamo la precisione dell'algoritmo con immagini prese: a varie distanze, con angolature non superiori ai 15$^{\circ}$ e di giorno cio\'e con luce accettabile.
+	Questi sono i dati ricavati utilizzando cartelli con larghezza circa di un lato corto di un foglio A4.
+
+	\begin{table}[h]
+		\centering
+		\begin{tabular}{ccc}
+		        & \% ROI riconosciuti & \% Segnali riconosciuti \\
+			0 metri & 100 \%                & 100 \%               \\
+			1 metro & 100 \%                & 80 \%                \\
+			2 metri & 100 \%                 & 10\%               \\
+			3 metri & 60 \%                  & 0 \%                 \\
+			4 metri & 20 \%                  & 0 \%                
+		\end{tabular}
+	\end{table}
+
+    Da una prima analisi si evince che l'algoritmo ha delle difficolt\'a dovute alla distanza. Quello che si nota analizzando i dati della tabella \'e che l'algoritmo trova delle difficolt\'a a trovare ROI nell'immagine quando il cartello \'e posto a pi\u di due metri di distanza. Inoltre ha difficolt\'a ancora maggiori quando ha trovato il cartello ma deve determinare di che tipo di segnale si tratta. Infatti anche in questo caso se si va oltre il metro la precisione cala drasticamente.
+
+    mettere dati lentezza se ce la fai
+
+\section{Conclusioni}
+
+	Sicuramente la parte principale  dell' algoritmo \'e la lentezza in quanto impiega circa un secondo per riconoscere un segnale. Se per esempio il robot si sposta alla velocit\'a di 10 km/h esso riconosce il cartello solo dopo 1 secondo cio\'e quando il robot ha percorso 3 metri. Quindi si cerca migliorare, cio\'e di ridurre il pi\'u possibile il tempo di esecuzione. \newline 
+	Un altro problema importante \'e che l'algoritmo non riesce a riconoscere i cartelli se questi sono posti a pi\'u di un metro di distanza. Questo implica che il robot deve andare lentissimo perch\'e un segnale abbia efficaca e che sia riconosciuto prima di averlo sorpassato. Anche in questo punto bisogna cercare aumentre la distazna a cui vengono riconosciuti i cartelli. \newline
+	Nel capitolo successivo verranno proposti dei metodi per risolvere il problema della lentezza dell' algoritmo e il problema della poca efficacia del riconoscimento di un cartello da una distsanza superiore al metro. Inoltre si implementa anche un metodo per calcolare la distanza dal cartello.
+
+	
+
+
