@@ -27,7 +27,7 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 
 	\subsection{Analisi nuovi cartelli}
 		Nella grafica dei nuovi cartelli \'e stato mantenuto il bordo nero e il fondo bianco che permetto di trovarli facilmente nell'immagine. \'E stato cambiato invece la grafica interna come si pu\'o vedere nella figura 3.1. In centro alla parte bianca del cartello c'\'e una griglia di 3x3  quadrati di uguali dimensioni dei quali solo alcuni sono neri. Il metodo utilizzato per decidere se un quadrato \'e nero o bianco \'e che si cerca di massimizzare la differenza fra i vari cartelli. Nel nostro caso i tre cartelli hanno una differenza tra uno e l'altro del 66\%. Cio significa che se si prendono due cartelli solo 3 quadrati su sei della griglia sono colorati nella stessa maniera.
-		\newline \'e stato scelto questo tipo di cartello perch\'e ogni segnale differsice molto da un altro segnale e quindi \'e difficile confondere i due anche se ci sono errori di qualche pixel dovuti alla scarsa risoluzione.
+		\newline \'E stato scelto questo tipo di cartello perch\'e ogni segnale differsice molto da un altro segnale e quindi \'e difficile confondere i due anche se ci sono errori di qualche pixel dovuti alla scarsa risoluzione.
 
 	\subsection{Implementazione nuovo riconoscimento}
 		L' algoritmo per l'implementazione \'e totalmente diverso da quello precedente. Mentre quello preesistente si avvaleva del filtri di canny e cercava le forme geometriche dentro il cartello queto utilizza un pi\'u semplice pattern matching ottenendo sia risultati migliori sotto forma di prestazioni che di percentuale di cartelli riconosciuti.\newline
@@ -126,12 +126,27 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 
 \section{Distanza dal cartello}
 	
-	Dopo aver riconosciuto il cartello per essere di aiuto a sapere il posizionamento del robot nel percorso bisogna calcolare la distanza da essi.
-	Di seguito si implementa un algoritmo per calcolare la distanza dal cartello individuato in precedenza.
+	Dopo aver riconosciuto il cartello si passa alla parte pi\'u importante dell'algoritmo il calcolo della distanza dal segnale.
 
 	\subsection{Analisi ambiente}
 
-		I passi precedenti dell' algoritmo individuano il cartello restituendo il i punti dell' rettangolo che lo contengono. Sapendo la grandezza dell' cartello a priori, si potrebbe ricavare la larghezza di esso e poi in funzione di essa si pu\'o sapere la distanza. Il problema per\'o \'e sempre la risoluzione della telecamera. Infatti dopo aver preso delle immagini sperimentali di cartelli posti a 2 e 3 metri si sono analizzate le larghezze in pixel dei due cartelli e si \'e notato che essi differivano di un pixel o addirittura in certi casi erano identiche.  Un diverso approccio sfrutta IPM (Inverse Perspective Mapping)
+		I passi precedenti dell' algoritmo individuano il cartello restituendo i punti del rettangolo che lo contengono. per calcolare la disstanza sapendo la grandezza del cartello a priori, si potrebbe ricavare la larghezza in pixel quindi in funzione di essa si pu\'o calcolare la distanza. Il problema, comunque, rimane la bassa risoluzione della telecamera. Infatti dopo aver preso delle immagini sperimentali di cartelli posti a 2 e 3 metri si sono analizzate le larghezze in pixel dei due cartelli e si \'e notato che essi differivano di un pixel o addirittura in certi casi erano identiche. Un diverso approccio sfrutta IPM (Inverse Perspective Mapping).
 		
 	\subsection{L' algoritmo}
-		
+
+		La vista prospettica dell'immagine catturata distorce in qualche modo la forma reale della strada. L' Inverse Prospective Mapping \'e un processo che serve appunto per eliminare eventuali distorsioni, rimappando l'immagine come se fosse stata presa da una telecamera perpendicolare al terreno. Questo algoritmo \'e gi\'a stato utilizzato dirante questo progetto per riuscire a trovare la linea nera sul terreno e riuscire cosi a pianificare il percorso \cite{Rettifica}\newline 
+		A noi per\'o per calcolare la distanza dal cartello non serve rimappare tutta l'immagine ma solo un punto cio\'e il punto di strada dove il cartello \'e perpendicolare ad esso. Per fare ci\'o prima di tutto abbiamo bisogno di ricavare tale punto. Siccome non c'\'e modo di rilevare, oltre al cartello, anche l'altezza del suo supporto \'e stato deciso di appoggiare i cartelli a terra e di non tenerli sollevati. Cosi facendo trovare il punto sul terreno risulta molto pi\'u facile, basta infatti prendere il centro della base del cartello trovando cosi dove si appoggia sul terreno e ottenendo il punto da noi desiderato.\newline
+		Ora basta passare il punto all' algoritmo di rettifica. La rettifica crea una telecamera virtuale perpendicolare al terreno ad una altezza nota tenendo conto dell' angolo di quella reale  rispetto al terreno ci restituisce la x e la y del punto come se fosse stato preso da quella telecamera.\newline
+		Adesso abbiamo il nostro punto nell'immagine dall'alto e dobbiamo ricavare quello nella realt\'a. Per fare ci\'o come si nota nella figura X.Y basta fare una semplice proporzione sia per la coordinata x che per la coordinata y
+		\begin{align*}
+			xi : focal = x : h
+			\\
+			yi : focal = y : h
+		\end{align*}
+		Dove xi e yi sono le coordinate del punto nell'immagine rettificata. Focal \'e la distanza focale dell'obbiettivo e h \'e l'altezza della telecamera virtuale. Invece x e y sono le coordinate del punto nella realt\'a da calcolare e come si vede dall immagine Y.X, sapendo l'inclinazione della telecamera, si calcola anche facilmente la posizione del cartello rispetto a quella del robot.
+		In pratica se si conosce la distanza del piano dell'oggetto, la posizione dell'oggetto nell'immagine e la distanza focale si riesce a calcolare la distanza dell'oggetto. Infine si bisogna sommare l'offset della telecamera rispetto al centro del robot.
+
+	\subsection{Implementazione}
+		Per implementare l'algoritmo per il calcolo della distanza \'e stata utilizzata la libreria Eigen\footnote{\url{ http://eigen.tuxfamily.org/}} che offre libreria per calcoli matematici necessari per l'algoritmo di rettifica delle immagini.\newline
+		L'algoritmo calcola la distanza su ogni immagine dove \'e stato trovato il cartello e se la tiene in memoria. Se non \'e stato trovato incrementa una variabile che serve a tener conto da quante immagini il cartello non \'e stato trovato. Questa ultima variabile serve per sapere da quanto non \'e stato trovato il cartello e quindi per sapere quanto \'e affidabile l'ultima distanza calcolata. Pi\'u aumenta pi\'u il robot ha fatto strada e quindi sempre meno affidabile.
+

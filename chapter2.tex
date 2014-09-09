@@ -12,8 +12,7 @@ In questo capitolo verr\'a analizzato il codice l'algoritmo esistente e verrano 
 	\item Telecamera: WebCam 640 x 480 pixel
 	\end{itemize}
 
-	L' algoritmo per riconoscere i segnali ha la necessit\'a di elaborare le immagini provenienti da uno stream video. L' essendo che il codice viene eseguito su una scheda con processore non particolarmente potente e avendo a disposizione poca RAM le performance per questo algoritmo sono un aspetto fondamentale. Per questo motivo \'e stato scelto come linguaggio c++ che offre performance ottime. Inoltre viene utilizzata la libreria open source chiamata OpenCV che offre molte funzioni per l' elaborazione immagini e video e molto indicata per applicazioni real time. Inoltre OpenCV non obbliga nessuna restrizione sulla licenza del software.
-
+	L' algoritmo per riconoscere i segnali ha la necessit\'a di elaborare le immagini provenienti da uno stream video. L' essendo che il codice viene eseguito su una scheda con processore non particolarmente potente e avendo a disposizione poca RAM le performance per questo algoritmo sono un aspetto fondamentale. Per questo motivo \'e stato scelto come linguaggio c++ che offre performance ottime. Inoltre viene utilizzata la libreria open source chiamata OpenCV che offre molte funzioni per l' elaborazione immagini e video e molto indicata per applicazioni real time. Inoltre OpenCV non obbliga nessuna restrizione sulla licenza del software.\footnote{\url{http://opencv.org}}
 
 \section{I Cartelli}
 	\begin{figure}[!ht]
@@ -40,7 +39,7 @@ In questo capitolo verr\'a analizzato il codice l'algoritmo esistente e verrano 
 
 \subsection{Individuazione cartello}
 
-	Prima di procedere all' effettiva individuazione del cartello \'e necessario trasformare l'immagine proveniente dallo stream video da colorata a bianco e nero. Per fare tale operazione si utilizza la funzione di OpenCV cv:cvtColor(). Successivamente all' immagine  in scala di grigi si applica il filtro di Canny. Il filtro di Canny serve a individuare i bordi degli oggetti in un immagine. L'algoritmo di Canny a grandi linee funziona nel seguente modo: si passano due valori alla funzione che saranno poi le nostre soglie. Poi si passa ad analizzare punto per punto dell'immagine calcolandone il gradiente in esso.  Se il gradiente \'e:
+	Prima di procedere all' effettiva individuazione del cartello \'e necessario trasformare l'immagine proveniente dallo stream video da colorata a bianco e nero. Per fare tale operazione si utilizza la funzione di OpenCV cv:cvtColor(). Successivamente all' immagine  in scala di grigi si applica il filtro di Canny \cite{canny}. Il filtro di Canny serve a individuare i bordi degli oggetti in un immagine. L'algoritmo di Canny a grandi linee funziona nel seguente modo: si passano due valori alla funzione che saranno poi le nostre soglie. Poi si passa ad analizzare punto per punto dell'immagine calcolandone il gradiente in esso.  Se il gradiente \'e:
 	\begin{itemize}
 		\item Inferiore alla soglia bassa, il punto \'e scartato;
 		\item Superiore alla soglia alta, il punto \'e accettato come parte di un contorno;
