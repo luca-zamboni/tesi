@@ -60,11 +60,14 @@ In questo capitolo verr\'a analizzato il codice l'algoritmo esistente e verrano 
 
 \subsection{Riconoscimento cartello}
 
-	Come ultimo passo bisogna determinare di che tipo di cartello si tratta oppure scartarlo, se esso era un falso cartello cio\'e una forma geometrica simile al cartello e riconosciuto come tale dai punti precedenti dell'algoritmo. Questo passo prende in input le ROI riconosciute ed elaborate in precedenza. Per riuscire a riconoscere i cerchi e i triangoli si usa una tecnica simile a quella per ricavare i quadrati dalla foto originale. In entrambe si usa il filtro di Canny per ricavare i bordi della figura. Una volta ricavati i bordi le strade si dividono per le due forme. Per riconoscere il triangolo si usa la funzione cv::approxPolyDP() come per riconoscere i quadrati per\'o in questo caso ovviamente si ricavano solo i poligoni con 3 facce. Invece per riconoscere il cerchio si usa la funzione cv::HoughCircle(). Questa funzione \'e contenuta nella libreria OpenCV e prende semlicemente in input l'immagine e restituisce i contorni che formano un cerchio entro un certo errore. Poi per entrambi i casi si controlla che la figura sia circa al centro del quadrato del cartello entro un certo scarto, altrimenti si scarta e si controlla pure che abbia le proporzioni giuste cio\'e la larghezza del cartello \'e $\frac{8}{5}$ della larghezza della figura interna anche qui entro un certo errore. \newline Arrivati a questo punto si \'e riusciti a determinare il tipo di cartello a cui appartiene la ROI passata in input. 
+	Come ultimo passo bisogna determinare di che tipo di cartello si tratta oppure scartarlo, se esso era un falso cartello cio\'e una forma geometrica simile al cartello e riconosciuto come tale dai punti precedenti dell'algoritmo. Questo passo prende in input le ROI riconosciute ed elaborate in precedenza. Per riuscire a riconoscere i cerchi e i triangoli si usa una tecnica simile a quella per ricavare i quadrati dalla foto originale. In entrambe si usa il filtro di Canny per ricavare i bordi della figura. Una volta ricavati i bordi le strade si dividono per le due forme. Per riconoscere il triangolo si usa la funzione cv::approxPolyDP() come per riconoscere i quadrati per\'o in questo caso ovviamente si ricavano solo i poligoni con 3 facce. Invece per riconoscere il cerchio si usa la funzione cv::HoughCircle(). Questa funzione \'e contenuta nella libreria OpenCV e prende semlicemente in input l'immagine e restituisce i contorni che formano un cerchio entro un certo errore. Poi per entrambi i casi si controlla che la figura sia circa al centro del quadrato del cartello entro un certo scarto, altrimenti si scarta e si controlla pure che abbia le proporzioni giuste cio\'e la larghezza del cartello \'e $\frac{8}{5}$ della larghezza della figura interna anche qui entro un certo errore.
+
+	Arrivati a questo punto si \'e riusciti a determinare il tipo di cartello a cui appartiene la ROI passata in input. 
 
 \section{Analisi dati algoritmo}
 
-	Adesso passiamo all' analisi prestazioni e precisione algoritmo.\newline
+	Adesso passiamo all' analisi prestazioni e precisione algoritmo.
+
 	Per prima cosa analizziamo la precisione dell'algoritmo con immagini prese: a varie distanze, con angolature non superiori ai 15$^{\circ}$ e di giorno cio\'e con luce accettabile.
 	Questi sono i dati ricavati utilizzando cartelli con larghezza circa di un lato corto di un foglio A4.
 
@@ -86,8 +89,10 @@ In questo capitolo verr\'a analizzato il codice l'algoritmo esistente e verrano 
 
 \section{Conclusioni}
 
-	Sicuramente la parte principale  dell' algoritmo \'e la lentezza in quanto impiega circa un secondo per riconoscere un segnale. Se per esempio il robot si sposta alla velocit\'a di 10 km/h esso riconosce il cartello solo dopo 1 secondo cio\'e quando il robot ha percorso 3 metri. Quindi si cerca migliorare, cio\'e di ridurre il pi\'u possibile il tempo di esecuzione. \newline 
-	Un altro problema importante \'e che l'algoritmo non riesce a riconoscere i cartelli se questi sono posti a pi\'u di un metro di distanza. Questo implica che il robot deve andare lentissimo perch\'e un segnale abbia efficaca e che sia riconosciuto prima di averlo sorpassato. Anche in questo punto bisogna cercare aumentre la distazna a cui vengono riconosciuti i cartelli. \newline
+	Sicuramente la parte principale  dell' algoritmo \'e la lentezza in quanto impiega circa un secondo per riconoscere un segnale. Se per esempio il robot si sposta alla velocit\'a di 10 km/h esso riconosce il cartello solo dopo 1 secondo cio\'e quando il robot ha percorso 3 metri. Quindi si cerca migliorare, cio\'e di ridurre il pi\'u possibile il tempo di esecuzione.
+
+	Un altro problema importante \'e che l'algoritmo non riesce a riconoscere i cartelli se questi sono posti a pi\'u di un metro di distanza. Questo implica che il robot deve andare lentissimo perch\'e un segnale abbia efficaca e che sia riconosciuto prima di averlo sorpassato. Anche in questo punto bisogna cercare aumentre la distazna a cui vengono riconosciuti i cartelli.
+	
 	Nel capitolo successivo verranno proposti dei metodi per risolvere il problema della lentezza dell' algoritmo e il problema della poca efficacia del riconoscimento di un cartello da una distsanza superiore al metro. Inoltre si implementa anche un metodo per calcolare la distanza dal cartello.
 
 	
