@@ -1,10 +1,10 @@
 
 \chapter{Esperimenti}
-In questo capitolo sono presentati i dati raccolti relativi a prestazioni, affidabilit\'a e precisione del algoritmo.
+In questo capitolo sono presentati i dati raccolti relativi a prestazioni, affidabilit\'a e precisione dell' algoritmo.
 
 \section{Test precisione riconoscimento dei nuovi cartelli}
 	
-	I cartelli utilizzati sono grandi 21 centimetri di lato cio\'e la larghezza del lato corto di un fogio A4 e sono posizionati perpendicolari al terreno e appoggiati su di esso.
+	I cartelli utilizzati sono grandi 21 centimetri di lato come la larghezza del lato corto di un fogio A4 e sono posizionati perpendicolari al terreno e appoggiati su di esso.
 	Per prima cosa sono stati prese delle immagini da 1 a 6 metri ogni 0.5 metri con il robot fermo. Successivamente sono state prese con il robot in movimento e con 2 cartelli posizionati a 3 e a 6 metri dal punto di partenza. Ogni prova \'e stata ripetuta pi\'u volte cambiando i cartelli e nel caso del robot in movimento la prova è stata ripetuta a 3 diverse velocità.
 
 	I risultati sono presentati di seguito
@@ -26,9 +26,9 @@ In questo capitolo sono presentati i dati raccolti relativi a prestazioni, affid
 		\caption{Percentuali di riconoscimento per velocità}
 	\end{table}
 
-	Analizzando il grafico nella figura 4.1 si nota un sostanziale miglioramento di precisione nel riconoscimento. Infatti le immagini vengono riconosciute al 100\% fino a quattro metri di distanza. Passati i quattro metri si la precisione comincia a diminuire ma rimane precisa non scendendo sotto il 60\% fino ai 6 metri. Oltre i sei metri non sono state effettuate ulteriori test.
+	Analizzando il grafico nella figura 4.1 si nota un sostanziale miglioramento di precisione nel riconoscimento. Infatti le immagini vengono riconosciute al 100\% fino a quattro metri di distanza. Passati i quattro metri si la precisione comincia a diminuire ma rimane precisa non scendendo sotto il 60\% fino ai 6 metri. Oltre i sei metri non sono stati effettuati ulteriori test.
 
-	Dai dati raccolti nella tabella 4.1 si nota che quando il robot va a velocità massima ha una precisione dell 80\% riconosciuti su tutti i frame presi invece del 94\% quando il robot va a metà della velocità. Questa differente precisione è dovuta alle differenti velocità del robot. Infatti analizzando le immagini prese ad entrambe le velocità si nota che le immagini prese con la velocità massima risultano più sfuocate e di qualità minore però questo non incide troppo sul risultato del test infatti la differenza di risultati è minima. Guardando poi alla terza colonna della tabella si conclude che un cartello non viene mai scambiato con un altro cioè se viene riconosciuta una ROI il suo interno non viene mai scambiato con quello di un altro cartello al massimo da errore.
+	Dai dati raccolti nella tabella 4.1 si nota che quando il robot va a velocità massima ha una precisione dell 80\% riconosciuti su tutti i frame presi invece del 94\% quando il robot va a metà della velocità. Questa differente precisione è dovuta alle differenti velocità del robot. Infatti analizzando le immagini prese ad entrambe le velocità si nota che le immagini prese con la velocità massima risultano più sfuocate e di qualità minore però questo non incide troppo sul risultato del test infatti la differenza di risultati è minima. Guardando poi alla terza colonna della tabella si conclude che un cartello non viene mai scambiato con un altro cioè se viene riconosciuta una ROI il suo interno non viene mai scambiato con quello di un altro cartello al massimo non lo identifica.
 
 \section{Test prestazioni}
 
@@ -38,7 +38,7 @@ In questo capitolo sono presentati i dati raccolti relativi a prestazioni, affid
 
 	GRAFICO
 
-	Quello che ne risulta analizzando i dati è che la velocit\'a di esecuzione diminuisce del TOT \% se si \'e gi\'a calcolato il punto sull'orizzonte. Invece se deve essere ancora calcolato il tempo di esecuzine aumenta parecchio. Infatti il tempo per calcolare il punto sull'orizzonte \'e di circa 1 secondo e quindi pesante per la nostra esecuzione dell'algoritmo. Per questo \'e stato scelto, come detto precedentemente, di calcolarlo sulla prima immagine e non su tutte a meno che il cartello non sia stato trovato allora si ricalcola.
+	Quello che ne risulta analizzando i dati è che la velocit\'a di esecuzione diminuisce del TOT \% se si \'e gi\'a calcolato il punto sull'orizzonte. Invece se deve essere ancora calcolato il tempo di esecuzione aumenta parecchio. Infatti il tempo per calcolare il punto sull'orizzonte \'e di circa 1 secondo e quindi pesante per la nostra esecuzione dell'algoritmo. Per questo \'e stato scelto, come detto precedentemente, di calcolarlo sulla prima immagine e non su tutte a meno che il cartello non sia stato trovato allora si ricalcola.
 
 \section{Test calcolo distanza}
 
@@ -72,7 +72,7 @@ In questo capitolo sono presentati i dati raccolti relativi a prestazioni, affid
 		\caption{Grafico errore della distanza calcolata rispetto a quella reale }
 	\end{figure}
 
-	Dai dati raccolti emerge che l'algoritmo per alcune distanze ovvero quelle inferiori ai 3 metri risulata avere una buona precisione infatti l'errore massimo rilevato è dell'ordine di 10 centimetri. Tuttavia se si superano i 3 metri l'errore incrementa con conseguente perdita di precisione. Questa perdita di precisione è dovuta a due fattori principali: l'algoritmo di rettifica e la risoluzione della telecamera. L'algoritmo di rettifica introduce degli errori perchè più la distanza aumenta più si perde precisione nel rettificare le immagini. Questo è dovuto al fatto che quando si tenta di rettificare una parte dell'immagine vicina alla telecamera si hanno più punti a disposizione invece più la distanza aumenta più si perde informazione nell'immagine e l'errore aumenta. Invece il problema relativo alla risoluzione è dovuto al fatto che incide sia sull' algoritmo di rettifica che sul calcolo del punto sulla base del cartello. Quando la distanza del cartello dalla telecamera è più ampia, il cartello verrà rappresentato con meno pixel nell'immagine, invece se è vicino verrà rappresentato con molti più pixel. Ciò comporta che se l'errore nel calcolo del punto alla base del cartello è di una piccola percentuale di pixel rispetto alla totalita di pixel nell'immagine, l'errore sarà molto più ampio quando il cartello è distante.
+	Dai dati raccolti emerge che l'algoritmo per alcune distanze ovvero quelle inferiori ai 3 metri risulta avere una buona precisione infatti l'errore massimo rilevato è dell'ordine di 10 centimetri. Tuttavia se si superano i 3 metri l'errore incrementa con conseguente perdita di precisione. Questa perdita di precisione è dovuta a due fattori principali: l'algoritmo di rettifica e la risoluzione della telecamera. L'algoritmo di rettifica introduce degli errori perchè più la distanza aumenta più si perde precisione nel rettificare le immagini. Questo è dovuto al fatto che quando si tenta di rettificare una parte dell'immagine vicina alla telecamera si hanno più punti a disposizione invece più la distanza aumenta più si perde informazione nell'immagine e l'errore aumenta. Invece il problema relativo alla risoluzione è dovuto al fatto che incide sia sull' algoritmo di rettifica che sul calcolo del punto sulla base del cartello. Quando la distanza del cartello dalla telecamera è più ampia, il cartello verrà rappresentato con meno pixel nell'immagine, invece se è vicino verrà rappresentato con molti più pixel. Ciò comporta che se l'errore nel calcolo del punto alla base del cartello è di una piccola percentuale di pixel rispetto alla totalita di pixel nell'immagine, l'errore sarà molto più ampio quando il cartello è distante.
 	In conclusione si è deciso di tenere valida, per la correzione della posizione del robot nel percorso, la distanza calcolata solo se essa è inferiore ai 3 metri perchè garantisce un errore massimo di 10 centimetri. 
 
 

@@ -33,10 +33,32 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 		\'E stato scelto questo tipo di cartello perch\'e ogni segnale differsice molto da un altro segnale e quindi \'e difficile confondere i due anche se ci sono errori di qualche pixel dovuti alla scarsa risoluzione.
 
 	\subsection{Implementazione nuovo riconoscimento}
-		L' algoritmo per l'implementazione \'e totalmente diverso da quello precedente. Mentre quello preesistente si avvaleva del filtri di canny e cercava le forme geometriche dentro il cartello queto utilizza un pi\'u semplice pattern matching ottenendo sia risultati migliori sotto forma di prestazioni che di percentuale di cartelli riconosciuti.
+		L' algoritmo per l'implementazione \'e totalmente diverso da quello precedente. Mentre quello preesistente si avvaleva del filtri di canny e cercava le forme geometriche dentro il cartello queto utilizza un pi\'u semplice pattern matching ottenendo sia risultati migliori sotto forma di prestazioni che di percentuale di cartelli riconosciuti.\newline
 
-		La funzione prende in input la porzione di immagine interna al cartello (ROI) in scala di grigi e il vettore contenente i cartelli conosciuti. Per prima la porzione all'interno dell immagine viene convertita in bianco e nero utilizzando la funzione di openCV cv::threshold(). Il livello di threshold \'e deciso facendo la media di livello di grigio di tutta l'immagine. Il vantaggio di avenre un livello ti threshold variabile e non fisso \'e che se l'immagine viene presa in un ambiente scuro esso si alza automaticamente discriminando il bianco dal nero come nell'immagine successiva.
-		Immagine.
+		\begin{algorithm}[htp]
+		\SetAlgoLined
+		\SetKwFunction{algo}{calcDifference}
+		\SetKwProg{myalg}{Function}{}{}
+		\myalg{\algo{ROI,cartello}{}}{
+
+			$ROI \longleftarrow biancoNero(ROI)$\;
+			$ROI \longleftarrow resize(ROI,N)$\;
+			$ROI \longleftarrow cutBorderBalck(ROI)$\;
+			$ROI \longleftarrow cutBorderWhite(ROI)$\;
+			$ROI \longleftarrow resize(ROI,N)$\;
+
+			\If{$ ROI.width <=0 || ROI.heigth <=0 $}{
+				\KwRet{$-1$}\;
+			}
+
+			$ uguali = contaPixelUguali(ROI,cartello) $\;
+			\KwRet{$uguali/pow(N,2)$}\;
+
+		}
+		\caption{Pseudo codice dell'algoritmo}
+		\end{algorithm}
+
+		La funzione prende in input la porzione di immagine interna al cartello (ROI) in scala di grigi e il vettore contenente i cartelli conosciuti. Per prima cosa la porzione all'interno dell immagine viene convertita in bianco e nero utilizzando la funzione di openCV cv::threshold(). Il livello di threshold \'e deciso facendo la media di livello di grigio di tutta l'immagine. Il vantaggio di avenre un livello ti threshold variabile e non fisso \'e che se l'immagine viene presa in un ambiente scuro esso si alza automaticamente discriminando il bianco dal nero come nell'immagine successiva.
 		
 		A questo punto l'immagine viene ingrandita a una dimensione nota e si tagliano i bordi neri che potrebbero esserci come rimanenze del bordo del cartello e si taglia anche la parte bianca attorno alla griglia di modo che rimanga solamente la figura interna. Per tagliare i bordi neri si prendono in considerazione i pixel esterni che formano la cornice. Se nella cornice \'e presente almeno un pixel nero allora la si elimina e si prende in considerazione la nuova cornice eseguendo il passo precedente fintanto che la cornice \'e formata da soli punti bianchi. Ora si taglia la parte bianca attorno alla figura. Per eliminarla si esegue un procedimento analogo solo che in questo caso si taglia il bordo solo se la cornice ha i pixel colorati tutti di bianco. Il taglio dei bordi consente di estrarre la figura interna al cartello ma serve anche come filtro a falsi cartelli riconosciuti come tali dai passi precedenti dell'algoritmo. Un cartello non \'e tale con molta probabilit\'a verr\'a tagliato praticamente tutto restituendo solo un pixel quando si taglia il nero perch\'e a meno che non abbia bordi bianchi ecco continuer\'a a trovare del nero sul bordo fino a superare la grandezza minima dell'interno del cartello impostata al 70\% della larghezza dell'algoritmo.
 		
@@ -82,7 +104,7 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 			\item \textbf{y} del punto di arrivo del segmento
 			\item \textbf{w} lunghezza del segmento
 			\item \textbf{p} p \'e la precisione con cui \'e calcolato il segmento
-			\item \textbf{logNfa}
+			\item \textbf{logNfa} NFA
 		\end{enumerate}
 		Successivamente per ogni segmento si calcola il punto medio di esso e la pendenza. I segmenti successivamente vengono filtrati.
 		I segmenti devono:
@@ -141,14 +163,14 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 		\begin{figure}[!ht]
 			\centering
 			\includegraphics[width=0.8\textwidth]{img/rettifica}
-			\caption{In rosso i Vanishing Point calcolati}
+			\caption{A sinistra la camera telecamera reale con il suo campo di viione e al centro la telecamera virtuale perpendicolare al punto sul terreno dove appoggia il cartello.}
 		\end{figure}
 		Ora basta passare il punto all' algoritmo di rettifica. La rettifica crea una telecamera virtuale perpendicolare al terreno ad una altezza nota tenendo conto dell' angolo di quella reale  rispetto al terreno ci restituisce la x e la y del punto come se fosse stato preso da quella telecamera.
 
 		\begin{figure}[!ht]
 			\centering
 			\includegraphics[width=0.8\textwidth]{img/rettifica2}
-			\caption{In rosso i Vanishing Point calcolati}
+			\caption{f distanza focale dell'immagine, h l'altezza dell'immagine dal terreno.}
 		\end{figure}
 		Adesso abbiamo il nostro punto nell'immagine dall'alto e dobbiamo ricavare quello nella realt\'a. Per fare ci\'o come si nota nella figura 3.8 basta fare una semplice proporzione sia per la coordinata x che per la coordinata y
 		\begin{align*}

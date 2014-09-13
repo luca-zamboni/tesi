@@ -2,19 +2,17 @@
 
 \section{Introduzione}
 
-	Negli ultimi anni si \'e sviluppata la necessit\'a di realizzare robot o macchine in grado di spostarsi autonomamente nell' ambiente senza bisogno dell' aiuto umano. Un settore importante in questo campo è il riconoscimento visuale. Il riconoscimento visuale negli anni ....
+	Negli ultimi anni si \'e sviluppata la necessit\'a di realizzare robot o macchine in grado di analizzare e muoversi autonomamente nell' ambiente senza bisogno dell' aiuto umano. Un settore importante in questo campo è la computer vision o visione artificiale. Per computer vision si intendono l’insieme dei processi che mirano a riprodurre la visione umana allo scopo di percepire, analizzare e riconoscere l'ambiente circostante. Negli ultimi tempi la computer vision si è sviluppata rapidamente in molti settori, basti pensare alle applicazioni di sicurezza delle automobili dove la visione della strada permette di rilevare eventuali pericoli sul terreno e di conseguenza effettuare frenate di emergenza. In un prossimo futuro l'integrazione fra computer vision, sia nello spettro di luce visibile che nell'infrarosso, ultravioletto, raggi-x, sensoristica di controllo auto e un sistema gps permetterà il completo controllo della viabilità sradale.
 
 \section{Il progetto}
-	In questo progetto per riuscire a far muovere il robot nell' ambiente ci serviamo di due telecamere una frontale una laterale montate su di esso e di una linea nera sul superficie del pavimento.
-	La linea nera rappresenta il percorso che il robot deve riuscire seguire attraverso le due telecamere. Il robot conosce a priori il percorso e deve sapere esattamente dove si trova in esso. Ogni telecamera \'e collegata a una scheda Beaglebone che serve per l' elaborazione delle immagini. Entrambe le telecamere servono per riuscire a riconoscere la linea nera sul terreno e riuscire a guidare il robot attraverso il percorso. La telecamera frontale elabora le immagini riconoscendo il percorso e pianificando la strada da seguire. La telecamera laterale invece serve per sapere a che distanza \'e la linea e cerca di correggerne la traiettoria.
-	Inoltre si \'e deciso di aggiungere anche dei segnali lungo il percorso che servono per dare delle indicazioni al robot e anche per sapere esattamente in che parte del percorso esso si trova stimandone la distanza da essi.
 
-\section{Algoritmo riconoscimento}
+	Lo scopo del progetto è quello di far muovere un robot lungo un percorso contrassegnato da una linea nera sul terreno. Il robot deve seguire la linea nera avvalendosi di due telecamere: una laterale ed una frontale. Entrambe le telecamere sono collegate ciascuna a due scheda Beaglebone\footnote{\url{http://beagleboard.org/bone}} che comunicano tra di loro e che servono per l' elaborazione delle immagini. Le immagini catturate dalla telecamera frontale sono utilizzate per riconoscere il percorso dettato dalla linea nera e riuscire a fare una pianificazione di una traiettoria, invece la telecamera laterale è utlizzata per sapere a che distanza si trova la linea e corregge la traiettoria del robot. Il robot sa a priori la struttura del percorso e deve riuscire a localizzarsi su di esso. Per sapere dov'è la sua posizione utilizza degli encoder posti sule ruote. In questo modo si sa esattamente quanti giri ha fatto ciascuna ruota e si riesce a calcolare facilmente la posizione del dispositivo. Purtroppo però ci sono sempre degli errori collegati agli encoder e alle ruote come per esempio l'usura di un pneumatico, di conseguenza è stato deciso di inserire nel percorso dei cartelli in posizioni note e stimando la posizione e la distanza da essi si riesce a correggere i valori relativi agli encoder.
 
-	In questo progetto si parte da un algoritmo gi\'a realizzato per riconoscere i segnali posizionati sul terreno e si propone un modo per migliorarne le prestazioni nella velocit\'a dell' elaborazione delle immagini, aumentare la precisione e la distanza a cui viene riconosciuto un segnale e infine stimare la distanza da esso.
+\section{Obbiettivi algoritmo riconoscimento}
+
+	In questo progetto per il riconoscimento dei cartelli posizionati sul percorso si parte da un algoritmo gi\'a realizzato e si propone un modo per migliorarne le prestazioni nella velocit\'a dell' elaborazione delle immagini, aumentare la precisione e la distanza a cui viene riconosciuto un segnale e infine stimare la distanza da esso.
 	
-	L' algoritmo di riconoscimento cartelli prende in input le immagini dallo streaming video della telecamera frontale. Esso deve elaborare ogni frame e riuscire a individuare se in essa \'e presente un cartello e in seguito riuscire a riconoscere di che tipo di cartello si tratti.
-	Dal momento che l'algoritmo deve essere eseguito su un corpo in movimento le decisioni devono essere prese alla svelta perch\'e basta un attimo di indecisione che il robot pu\'o uscire di strada. Questo impone che l'algoritmo deve avere un tempo di esecuzione abbastanza ristretto. Facendo un esempio se il robot si muovesse alla velocit\'a di 10 Km/h esso percorrerebbe poco meno di 3 m/s (2.7777 m/s). Quindi se l'algoritmo per riconoscere il cartello impiegasse un secondo, significherebbe che se un cartello \'e posizionato a meno di 3 metri allora esso viene riconosciuto  solo quando viene superato. Dunque si cerca di contrarre il pi\'u possibile il tempo di esecuzione dell' algoritmo. Oltre a questo bisogna che il riconoscimento del cartello sia robusto. Per robustezza si intende la capacit\'a di:
+	L' algoritmo di riconoscimento cartelli prende in input le immagini dallo streaming video della telecamera frontale. Esso deve elaborare ogni frame e riuscire a individuare se in essa \'e presente un cartello e in seguito riuscire a riconoscere di che tipo di cartello si tratti. Dal momento che l'algoritmo deve essere eseguito su un corpo in movimento le decisioni devono essere prese rapidamente perch\'e basta un attimo di indecisione che il robot pu\'o uscire di strada. Questo impone che l'algoritmo deve avere un tempo di esecuzione abbastanza ristretto. Facendo un esempio se il robot si muovesse alla velocit\'a di 10 Km/h esso percorrerebbe poco meno di 3 m/s (2.7777 m/s). Quindi se l'algoritmo per riconoscere il cartello impiegasse un secondo, significherebbe che se un cartello \'e posizionato a meno di 3 metri allora viene riconosciuto solo quando è stato superato. Dunque si cerca di contrarre il pi\'u possibile il tempo di esecuzione dell' algoritmo. Oltre a questo bisogna che il riconoscimento del cartello sia robusto. Per robustezza si intende la capacit\'a di:
 		\begin{itemize}
 		\item Riconoscere il segnale a varie distanze sia da vicino che da lontano.
 		\item Individuare il cartello a diversi livelli di luminosit\'a. Questo perch\'e il robot deve essere in grado di guidare autonomamente sia di giorno, caratterizzato da un' intensa illuminazione, che di notte quando invece la luminosit\'a \'e scarsa.
@@ -23,12 +21,12 @@
 	\end{itemize}
 
 \section{Motivazioni}
-	ahahahah ma che motivazione
+	La motivazione principale che mi ha spinto alla partecipazione di questo progetto è la mia visione del futuro come accennato nell' introduzione e allo stimolo dato dalle problematiche tecniche che si vanno ad affrontare.
 
 \section{Outline}
 	Nel secondo capitolo verr\'a descritto come lavora l'algoritmo esistente e verranno analizzate prestazioni e efficacia.
 	Nel terzo capitolo sono proposte soluzioni per migliorare l'algoritmo descritto nel capitolo precedente.
-	Nel quarto  capitolo invece sono esposti i dati raccolti delle prove sperimentali riguardo i nuovi cambiamenti. Nel quinto capitolo ci sono l'analisi dei dati del capitolo precedente e le conclusioni del progetto.
+	Nel quarto  capitolo invece sono esposti i dati raccolti delle prove sperimentali riguardo i nuovi cambiamenti. Nel ultimo capitolo ci sono le conclusioni del lavoro svolto.
 
 
 
