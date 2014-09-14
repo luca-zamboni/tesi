@@ -36,9 +36,13 @@ In questo capitolo sono presentati i dati raccolti relativi a prestazioni, affid
 
 	Per fare questi test sono state utilizzate delle immagini prese con il robot in movimento una di seguito all' altra partendo da una distanza dal cartello di 6 metri. La grandezza dei segnali \'e pari al lato corto di un foglio A4. Purtroppo le immagini sono state prese in laboratorio e non all'aperto su una strada per\'o il vanishing Point viene calcolato correttamente anche aiutato dalle righe del pavimento che sono parallele alla direzione del robot. Sono state fatte 9 prove con il robot in movimento a diverse velocit\'a. Prima \'e stato fatto cercare il cartello usando l'algoritmo spiegato precedentemente sul vanishing Point e poi senza calcolarlo. Quello che \'e emerso \'e riportato nel grafico seguente.
 
-	GRAFICO
+	\begin{figure}[!ht]
+		\centering
+		\includegraphics[width=1\textwidth]{img/grafico3}
+		\caption{Grafico confronto tempi di esecuzione con e senza Vanishing Point.}
+	\end{figure}
 
-	Quello che ne risulta analizzando i dati è che la velocit\'a di esecuzione diminuisce del TOT \% se si \'e gi\'a calcolato il punto sull'orizzonte. Invece se deve essere ancora calcolato il tempo di esecuzione aumenta parecchio. Infatti il tempo per calcolare il punto sull'orizzonte \'e di circa 1 secondo e quindi pesante per la nostra esecuzione dell'algoritmo. Per questo \'e stato scelto, come detto precedentemente, di calcolarlo sulla prima immagine e non su tutte a meno che il cartello non sia stato trovato allora si ricalcola.
+	Quello che ne risulta analizzando i dati è si ha un guadagno del 38\% quando si cerca un immagine nell'area intorno al Vanishing Point. Purtroppo però la funzione che calcola il punto sull'orizzonte ha complessità computazionale molto alta, soprattutto la funzione line segment detection che serve a calcolare i segmenti nell'immagine. Infatti il tempo impiegato dal algoritmo del calcolo è di \textasciitilde $1$ secondo. Come stato detto nel capitolo precedente è stato deciso dunque di far calcolare all' algoritmo il Vanishing Point solo sulla pima immagine e non su tutte. Esso viene ricalcolato solo nel caso in cui nell'intorno di esso non sia presente il cartello.
 
 \section{Test calcolo distanza}
 

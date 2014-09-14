@@ -46,6 +46,7 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 			$ROI \longleftarrow cutBorderBalck(ROI)$\;
 			$ROI \longleftarrow cutBorderWhite(ROI)$\;
 			$ROI \longleftarrow resize(ROI,N)$\;
+			$ROI \longleftarrow resize(ROI,N)$\;
 
 			\If{$ ROI.width <=0 || ROI.heigth <=0 $}{
 				\KwRet{$-1$}\;
@@ -62,13 +63,10 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 		
 		A questo punto l'immagine viene ingrandita a una dimensione nota e si tagliano i bordi neri che potrebbero esserci come rimanenze del bordo del cartello e si taglia anche la parte bianca attorno alla griglia di modo che rimanga solamente la figura interna. Per tagliare i bordi neri si prendono in considerazione i pixel esterni che formano la cornice. Se nella cornice \'e presente almeno un pixel nero allora la si elimina e si prende in considerazione la nuova cornice eseguendo il passo precedente fintanto che la cornice \'e formata da soli punti bianchi. Ora si taglia la parte bianca attorno alla figura. Per eliminarla si esegue un procedimento analogo solo che in questo caso si taglia il bordo solo se la cornice ha i pixel colorati tutti di bianco. Il taglio dei bordi consente di estrarre la figura interna al cartello ma serve anche come filtro a falsi cartelli riconosciuti come tali dai passi precedenti dell'algoritmo. Un cartello non \'e tale con molta probabilit\'a verr\'a tagliato praticamente tutto restituendo solo un pixel quando si taglia il nero perch\'e a meno che non abbia bordi bianchi ecco continuer\'a a trovare del nero sul bordo fino a superare la grandezza minima dell'interno del cartello impostata al 70\% della larghezza dell'algoritmo.
 		
-		Adesso si portano sia i cartelli che l'immagine interna al cartello a una grandezza uguale.
-		A questo punto si ha solo la griglia interna al cartello e si passa all'effettivo riconoscimento di esso. Per identificare la griglia interna facendo un semplice pattern matching fra cartelli e parte interna che cartello che vogliamo riconoscere. Per fare pattern matching basta fare uno xor pixel a pixel tra le due immagini da confrontare. Se un cartello ha una percentuale di pixel corrispondenti pi\'u alta degli altri e pi\'u alta di una soglia impostata del 70\% verr\'a riconosciuto come cartello corrispondente.
+		Adesso si portano sia i cartelli che l'immagine interna al cartello a una grandezza uguale. A questo punto si ha solo la griglia interna al cartello e si passa all'effettivo riconoscimento di esso. Per identificare la griglia interna facendo un semplice pattern matching fra cartelli e parte interna che cartello che vogliamo riconoscere. Per fare pattern matching basta fare uno xor pixel a pixel tra le due immagini da confrontare. Se un cartello ha una percentuale di pixel corrispondenti pi\'u alta degli altri e pi\'u alta di una soglia impostata del 70\% verr\'a riconosciuto come cartello corrispondente.
 		
 
 \section{Vanishing Point}
-
-	Qualcosa forse altrimenti nnt
 
 	\subsection{Analisi ambiente}
 
@@ -85,7 +83,7 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 
 	\subsection{Punto sull'orizzonte}
 
-		Nella sezione precedente \'e stato detto che il cartello \'e conveniente cercarlo prima sulla linea dell'orizzonte. Ma come fare riconoscere l' orizzonte? La soluzione \'e l' implementazione di un algoritmo che calcola il punto sull'orizzonte detto anche Vanishing Point.
+		Nella sezione precedente \'e stato detto che il cartello \'e conveniente cercarlo prima sulla linea dell'orizzonte. Ma come fare riconoscere l' orizzonte? La soluzione \'e l' implementazione di un algoritmo che calcola il punto sull'orizzonte detto anche Vanishing Point \cite{vanish}.
 		
 		Il vanishing point \'e un punto nell'immagine che \'e il risultato  dell' intersezione del prolungamento delle linee parallele sul piano di immagine. Per esempio le linee bianche che stanno ai bordi di una strada sono parallele ma nell'immagine se si prolungano si incontreranno sulla linea dell' orizzonte. Sfruttando questo principio \'e possibile calcolare il Vanishing Point.
 		\begin{figure}[!ht]
@@ -157,7 +155,7 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 		
 	\subsection{L' algoritmo}
 
-		La vista prospettica dell'immagine catturata distorce in qualche modo la forma reale della strada. L' Inverse Prospective Mapping \'e un processo che serve appunto per eliminare eventuali distorsioni, rimappando l'immagine come se fosse stata presa da una telecamera perpendicolare al terreno. Questo algoritmo \'e gi\'a stato utilizzato dirante questo progetto per riuscire a trovare la linea nera sul terreno e riuscire cosi a pianificare il percorso \cite{Rettifica}.
+		La vista prospettica dell'immagine catturata distorce in qualche modo la forma reale della strada. L' Inverse Prospective Mapping \'e un processo che serve appunto per eliminare eventuali distorsioni, rimappando l'immagine come se fosse stata presa da una telecamera perpendicolare al terreno. Questo algoritmo di rettifica \'e gi\'a stato utilizzato dirante questo progetto per riuscire a trovare la linea nera sul terreno e riuscire cosi a pianificare il percorso \cite{Rettifica}.
 
 		A noi per\'o per calcolare la distanza dal cartello non serve rimappare tutta l'immagine ma solo un punto cio\'e il punto di strada dove il cartello \'e perpendicolare ad esso. Per fare ci\'o prima di tutto abbiamo bisogno di ricavare tale punto. Siccome non c'\'e modo di rilevare, oltre al cartello, anche l'altezza del suo supporto \'e stato deciso di appoggiare i cartelli a terra e di non tenerli sollevati. Cosi facendo trovare il punto sul terreno risulta molto pi\'u facile, basta infatti prendere il centro della base del cartello trovando cosi dove si appoggia sul terreno e ottenendo il punto da noi desiderato.
 		\begin{figure}[!ht]
