@@ -2,13 +2,13 @@
 
 \section{Introduzione}
 
-	Negli ultimi anni si \'e sviluppata la necessit\'a di realizzare robot o macchine in grado di analizzare e muoversi autonomamente nell' ambiente senza bisogno dell' aiuto umano. Un settore importante in questo campo è la computer vision o visione artificiale. Per computer vision si intendono l’insieme dei processi che mirano a riprodurre la visione umana allo scopo di percepire, analizzare e riconoscere l'ambiente circostante. Negli ultimi tempi la computer vision si è sviluppata rapidamente in molti settori, basti pensare alle applicazioni di sicurezza delle automobili dove la visione della strada permette di rilevare eventuali pericoli sul terreno e di conseguenza effettuare frenate di emergenza. In un prossimo futuro l'integrazione fra computer vision, sia nello spettro di luce visibile che nell'infrarosso, ultravioletto, raggi-x, sensoristica di controllo auto e un sistema gps permetterà il completo controllo della viabilità sradale.
+	Negli ultimi anni si \'e sviluppata la necessit\'a di realizzare robot o macchine in grado di analizzare e muoversi autonomamente nell' ambiente senza bisogno dell' aiuto umano. Un settore importante in questo campo è la computer vision o visione artificiale. Per computer vision si intendono l’insieme dei processi che mirano a riprodurre la visione umana allo scopo di percepire, analizzare e riconoscere l'ambiente circostante. Negli ultimi tempi la computer vision si è sviluppata rapidamente in molti settori, basti pensare alle applicazioni di sicurezza delle automobili dove la visione della strada permette di rilevare eventuali pericoli sul terreno e di conseguenza effettuare frenate di emergenza. In un prossimo futuro l'integrazione fra computer vision, sia nello spettro di luce visibile che nell'infrarosso, ultravioletto, raggi-x, sensoristica di controllo auto e un sistema gps permetterà il completo controllo della viabilità stradale.
 
 \section{Il progetto}
 
-	Lo scopo del progetto è quello di far muovere un robot lungo un percorso contrassegnato da una linea nera sul terreno. Il robot deve seguire la linea nera avvalendosi di due telecamere: una laterale ed una frontale. Entrambe le telecamere sono collegate ciascuna a due scheda Beaglebone\footnote{\url{http://beagleboard.org/bone}} che comunicano tra di loro e che servono per l' elaborazione delle immagini. Le immagini catturate dalla telecamera frontale sono utilizzate per riconoscere il percorso dettato dalla linea nera e riuscire a fare una pianificazione di una traiettoria, invece la telecamera laterale è utlizzata per sapere a che distanza si trova la linea e corregge la traiettoria del robot. Il robot sa a priori la struttura del percorso e deve riuscire a localizzarsi su di esso. Per sapere dov'è la sua posizione utilizza degli encoder posti sule ruote. In questo modo si sa esattamente quanti giri ha fatto ciascuna ruota e si riesce a calcolare facilmente la posizione del dispositivo. Purtroppo però ci sono sempre degli errori collegati agli encoder e alle ruote come per esempio l'usura di un pneumatico, di conseguenza è stato deciso di inserire nel percorso dei cartelli in posizioni note e stimando la posizione e la distanza da essi si riesce a correggere i valori relativi agli encoder.
+	Lo scopo del progetto è quello di far muovere un robot lungo un percorso contrassegnato da una linea nera sul terreno. Il robot deve seguire la linea nera avvalendosi di due telecamere: una laterale ed una frontale. Entrambe le telecamere sono collegate ciascuna a due scheda Beaglebone\footnote{\url{http://beagleboard.org/bone}} che comunicano tra di loro e che servono per l' elaborazione delle immagini. Le immagini catturate dalla telecamera frontale sono utilizzate per riconoscere il percorso dettato dalla linea nera e riuscire a fare una pianificazione di una traiettoria, invece la telecamera laterale è utlizzata per sapere a che distanza si trova la linea e corregge la traiettoria del robot. Il robot sa a priori la struttura del percorso e deve riuscire a localizzarsi su di esso. Per sapere dov'è la sua posizione utilizza degli encoder posti sulle ruote. In questo modo si sa esattamente quanti giri ha fatto ciascuna ruota e si riesce a calcolare facilmente la posizione del dispositivo. Purtroppo però ci sono sempre degli errori collegati agli encoder e alle ruote come per esempio l'usura di un pneumatico; di conseguenza è stato deciso di inserire nel percorso dei cartelli in posizioni note e stimando la posizione e la distanza da essi si riesce a correggere i valori relativi agli encoder.
 
-\section{Obbiettivi algoritmo riconoscimento}
+\section{Obbiettivi}
 
 	In questo progetto per il riconoscimento dei cartelli posizionati sul percorso si parte da un algoritmo gi\'a realizzato e si propone un modo per migliorarne le prestazioni nella velocit\'a dell' elaborazione delle immagini, aumentare la precisione e la distanza a cui viene riconosciuto un segnale e infine stimare la distanza da esso.
 	
@@ -17,17 +17,21 @@
 		\item Riconoscere il segnale a varie distanze sia da vicino che da lontano.
 		\item Individuare il cartello a diversi livelli di luminosit\'a. Questo perch\'e il robot deve essere in grado di guidare autonomamente sia di giorno, caratterizzato da un' intensa illuminazione, che di notte quando invece la luminosit\'a \'e scarsa.
 		\item Riuscire a riconoscere il segnale da varie angolature, attuando una trasformazione prospettica. Questo perch\'e mentre si \'e in moto non sempre si \'e perfettamente allineati con il cartello. 
-		\item Riuscire a filtrare le forme geometriche dei cartelli, tralasciando le altre. Se ad esempio in un'immagine sono presenti piu quadrati, individuare tra questi solo quelli relativi ai cartelli.
+		\item Riuscire a filtrare le forme geometriche dei cartelli, tralasciando le altre. Se ad esempio in un'immagine sono presenti più quadrati, individuare tra questi solo quelli relativi ai cartelli.
 	\end{itemize}
 
 \section{Motivazioni}
-	La motivazione principale che mi ha spinto alla partecipazione di questo progetto è la mia visione del futuro come accennato nell' introduzione e allo stimolo dato dalle problematiche tecniche che si vanno ad affrontare.
+	La motivazione principale che mi ha spinto alla partecipazione di questo progetto è stata la mia visione del futuro, come accennato nell' introduzione, dal momento che l'uomo intenderà servirsi dell'uso di robot sempre più e sempre in più settori, tra cui quello della guida. Inoltre un secondo stimolo è dato dalle problematiche tecniche che si vanno ad affrontare, e quindi la ricerca di una possibile soluzione o miglioramento.
 
 \section{Outline}
-	Nel secondo capitolo verr\'a descritto come lavora l'algoritmo esistente e verranno analizzate prestazioni e efficacia.
-	Nel terzo capitolo sono proposte soluzioni per migliorare l'algoritmo descritto nel capitolo precedente.
-	Nel quarto  capitolo invece sono esposti i dati raccolti delle prove sperimentali riguardo i nuovi cambiamenti. Nel ultimo capitolo ci sono le conclusioni del lavoro svolto.
-
+	Dopo questa breve introduzione, la tesi si struttura su quattro capitoli.
+	\begin{itemize}
+		\item Capitolo 2: offre una descrizione di come opera l'algoritmo esistente e vengono analizzate e discusse le sue prestazioni e la sua efficacia
+		\item Capitolo 3: sono proposte soluzioni per migliorare l'algoritmo descritto nel capitolo precedente
+		\item Capitolo 4: vengono esposti e analizzati i dati raccolti dalle prove sperimentali a seguito dei nuovi cambiamenti introdotti
+		\item Capitolo 5: conclusioni del lavoro svolto
+	\end{itemize}
+	
 
 
 
