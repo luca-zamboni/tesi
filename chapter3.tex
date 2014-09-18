@@ -56,19 +56,19 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 		\SetKwProg{myalg}{Function}{}{}
 		\myalg{\algo{ROI,cartello}{}}{
 
-			$originalWidth \longleftarrow ROI.width$\;
-			$originalHeight \longleftarrow ROI.height$\;
-			$ROI \longleftarrow biancoNero(ROI)$\;
-			$ROI \longleftarrow resize(ROI,N)$\;
-			$ROI \longleftarrow cutBorderBalck(ROI)$\;
-			$ROI \longleftarrow cutBorderWhite(ROI)$\;
+			$originalWidth \leftarrow ROI.width$\;
+			$originalHeight \leftarrow ROI.height$\;
+			$ROI \leftarrow biancoNero(ROI)$\;
+			$ROI \leftarrow resize(ROI,N)$\;
+			$ROI \leftarrow cutBorderBalck(ROI)$\;
+			$ROI \leftarrow cutBorderWhite(ROI)$\;
 
 			\If{$ ROI.width <= originalWidth || ROI.heigth <=originalHeight $}{
 				\KwRet{$-1$}\;
 			}
 
-			$ROI \longleftarrow resize(ROI,N)$\;
-			$ROI \longleftarrow resize(cartello,N)$\;
+			$ROI \leftarrow resize(ROI,N)$\;
+			$ROI \leftarrow resize(cartello,N)$\;
 
 			$ uguali = contaPixelUguali(ROI,cartello) $\;
 			\KwRet{$uguali/pow(N,2)$}\;
@@ -79,14 +79,16 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 
 		La funzione prende in input la porzione di immagine interna al cartello (ROI) in scala di grigi e il vettore contenente i cartelli conosciuti. Per prima cosa la porzione all'interno dell' immagine viene convertita in bianco e nero utilizzando la funzione di openCV cv::threshold(). Il livello di threshold è deciso facendo la media di livello di grigio di tutta l'immagine. Il vantaggio di avere un livello di threshold variabile e non fisso è che se l'immagine viene presa in un ambiente scuro esso si alza automaticamente discriminando il bianco dal nero.
 		
-		A questo punto l'immagine viene ingrandita a una dimensione nota e si tagliano i bordi neri che potrebbero esserci come rimanenze del bordo del cartello e si taglia anche la parte bianca attorno alla griglia di modo che rimanga solamente la figura interna. Per tagliare i bordi neri si prendono in considerazione i pixel esterni che formano la cornice. Se nella cornice è presente almeno un pixel nero allora la si elimina e si prende in considerazione la nuova cornice eseguendo il passo precedente fintantochè la cornice è formata da soli punti bianchi. A questo punto si taglia la parte bianca attorno alla figura. Per eliminarla si esegue un procedimento analogo solo che in questo caso si taglia il bordo solo se la cornice ha i pixel colorati tutti di bianco. Il taglio dei bordi consente di estrarre la figura interna al cartello ma serve anche come filtro a falsi cartelli riconosciuti come tali dai passi precedenti dell'algoritmo. Un cartello non è tale con molta probabilit\'a verr\'a tagliato  tutto restituendo solo un pixel quando si taglia il nero perchè a meno che non abbia bordi bianchi esso continuer\'a a trovare del nero sul bordo fino a superare la grandezza minima dell'interno del cartello impostata al 70\% della larghezza dell'algoritmo.
+		A questo punto l'immagine viene ingrandita a una dimensione nota e si tagliano i bordi neri che potrebbero esserci come rimanenze del bordo del cartello e si taglia anche la parte bianca attorno alla griglia di modo che rimanga solamente la figura interna. Per tagliare i bordi neri si prendono in considerazione i pixel esterni che formano la cornice. Se nella cornice è presente almeno un pixel nero allora la si elimina e si prende in considerazione la nuova cornice eseguendo il passo precedente fintantochè la cornice è formata da soli punti bianchi. A questo punto si taglia la parte bianca attorno alla figura. Per eliminarla si esegue un procedimento analogo solo che in questo caso si taglia il bordo solo se la cornice ha i pixel colorati tutti di bianco. Il taglio dei bordi consente di estrarre la figura interna al cartello ma serve anche come filtro a falsi cartelli riconosciuti come tali dai passi precedenti dell'algoritmo. Un cartello non è tale con molta probabilità verrà tagliato  tutto restituendo solo un pixel quando si taglia il nero perchè a meno che non abbia bordi bianchi esso continuerà a trovare del nero sul bordo fino a superare la grandezza minima dell'interno del cartello impostata al 70\% della larghezza dell'algoritmo.
 		
-		Adesso si portano sia i cartelli che l'immagine interna al cartello a una grandezza uguale. A questo punto si ha solo la griglia interna al cartello e si passa all'effettivo riconoscimento di esso. Per identificare la griglia interna si esegue un semplice pattern matching fra cartelli e parte interna che cartello che vogliamo riconoscere. Per fare pattern matching basta fare uno xor pixel a pixel tra le due immagini da confrontare. Se un cartello ha una percentuale di pixel corrispondenti pi\'u alta degli altri e pi\'u alta di una soglia impostata del 70\% verr\'a riconosciuto come cartello corrispondente.
+		Adesso si portano sia i cartelli che l'immagine interna al cartello a una grandezza uguale. A questo punto si ha solo la griglia interna al cartello e si passa all'effettivo riconoscimento di esso. Per identificare la griglia interna si esegue un semplice pattern matching fra cartelli e parte interna che cartello che vogliamo riconoscere. Per fare pattern matching basta fare uno xor pixel a pixel tra le due immagini da confrontare. Se un cartello ha una percentuale di pixel corrispondenti pi\'u alta degli altri e pi\'u alta di una soglia impostata del 70\% verrà riconosciuto come cartello corrispondente.
 		
 
 \section{Vanishing Point}
 
 	\subsection{Analisi ambiente}
+
+		Analizando i dati del veccio algoritmo si è notato che la funzione che tiene occupato il processore per più tempo è il filtro di Canny. La funzione di Canny è fortemente dipendente dalla grandezza dell'immagine. Una possibile soluzione è ridurre l'area di ricerca dell'immagine per incrementare le prestazioni della funzione e quindi ridurre i tempi di esecuzione.
 
 		I cartelli vengono sempre posizionati alla fine di un rettilineo e prima di una curva e mai durante o appena dopo di essa. Così facendo le immagini che dovranno essere analizzate saranno pi\'u nitide per il semplice fatto che la telecamera sta facendo meno movimento laterale e le immagini risultano meno 'mosse' di conseguenza meno disturbate.
 
@@ -159,15 +161,15 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 		\end{figure}
 
 	\subsection{Implementazione}
-		L'algoritmo per il calcolo del punto sull'orizzonte viene chiamato prima di fare qualsiasi operazione sull' immagine. L'algoritmo, una volta calcolato il punto sull'orizzonte, controlla che essso sia nell'immagine perchè il punto sull'orizzonte potrebbe essere anche esterno ad essa. Se questo è esterno non si prende in considerazione, altrimenti si taglia l'immagine nel suo intorno. Il taglio viene eseguito tenendo una percentuale di pixel rispetto alla larghezza dell' immagine. Questa percentuale è fissata al 60\% rispetto alla larghezza e anche all'altezza. Siccome il punto sull'orizzonte è quasi sempre calcolato nella parte alta come nella figura 3.2 la parte tagliata in altezza sar\'a quasi sempre minore al 60\% riducendo cos\'i la superfice da analizzare successivamente aumentando le prestazioni. 
+		L'algoritmo per il calcolo del punto sull'orizzonte viene chiamato prima di fare qualsiasi operazione sull' immagine. L'algoritmo, una volta calcolato il punto sull'orizzonte, controlla che essso sia nell'immagine perchè il punto sull'orizzonte potrebbe essere anche esterno ad essa. Se questo è esterno non si prende in considerazione, altrimenti si taglia l'immagine nel suo intorno. Il taglio viene eseguito tenendo una percentuale di pixel rispetto alla larghezza dell' immagine. Questa percentuale è fissata al 60\% rispetto alla larghezza e anche all'altezza. Siccome il punto sull'orizzonte è quasi sempre calcolato nella parte alta come nella figura 3.2 la parte tagliata in altezza sarà quasi sempre minore al 60\% riducendo cos\'i la superfice da analizzare successivamente aumentando le prestazioni. 
 
-		Il calcolo del vanishing Point come vedremo nella prossima sezione ha un costo computazionale parecchio elevato di circa un secondo quindi è stato scelto di calcolarlo solo sulla prima immagine quando si arriva in rettilineo. Successivamente se si trova il cartello nell'intorno del punto sull'orizzonte allora si passa alla prossima immagine e su di esso non si ricalcola tenendo quello precedente, altrimenti si cerca il cartello in tutta l'immagine e si cercher\'a di ricalcolare il vanishing point nel prossimo frame.
+		Il calcolo del vanishing Point come vedremo nella prossima sezione ha un costo computazionale parecchio elevato di circa un secondo quindi è stato scelto di calcolarlo solo sulla prima immagine quando si arriva in rettilineo. Successivamente se si trova il cartello nell'intorno del punto sull'orizzonte allora si passa alla prossima immagine e su di esso non si ricalcola tenendo quello precedente, altrimenti si cerca il cartello in tutta l'immagine e si cercherà di ricalcolare il vanishing point nel prossimo frame.
 
 		\begin{figure}[!ht]
 			\centering
 			\includegraphics[width=0.49\textwidth]{img/immaorivani}
 			\includegraphics[width=0.49\textwidth]{img/immavani}
-			\caption[Esempio vanishin Point calcolato]{A destra l'immagine nell'intorno del Vanishing Point}
+			\caption[Esempio vanishin Point calcolato]{A sinistra il frame originale con il vanishing point in bianco. A destra l'immagine nell'intorno del Vanishing Point}
 		\end{figure}
 
 \section{Distanza dal cartello}
@@ -176,11 +178,11 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 
 	\subsection{Analisi ambiente}
 
-		I passi precedenti dell' algoritmo individuano il cartello restituendo i punti del rettangolo che lo contengono. per calcolare la distanza sapendo la grandezza del cartello a priori, si potrebbe ricavare la larghezza in pixel quindi in funzione di essa si pu\'o calcolare la distanza. Il problema, comunque, rimane la bassa risoluzione della telecamera. Infatti dopo aver preso delle immagini sperimentali di cartelli posti a 2 e 3 metri si sono analizzate le larghezze in pixel dei due cartelli e si è notato che essi differivano di un pixel o addirittura in certi casi erano identiche. Un diverso approccio sfrutta IPM (Inverse Perspective Mapping).
+		I passi precedenti dell' algoritmo individuano il cartello restituendo i punti del rettangolo che lo contengono. Per calcolare la distanza sapendo la grandezza del cartello a priori, si potrebbe ricavare la larghezza in pixel quindi in funzione di essa si pu\'o calcolare la distanza. Il problema, comunque, rimane la bassa risoluzione della telecamera. Infatti dopo aver preso delle immagini sperimentali di cartelli posti a 2 e 3 metri si sono analizzate le larghezze in pixel dei due cartelli e si è notato che essi differivano di un pixel o addirittura in certi casi erano identiche. Un diverso approccio sfrutta IPM (Inverse Perspective Mapping).
 		
 	\subsection{L' algoritmo}
 
-		La vista prospettica dell'immagine catturata distorce la forma reale della strada. L' Inverse Prospective Mapping è un processo che serve appunto per eliminare eventuali distorsioni, rimappando l'immagine attraverso una rototraslazione come se fosse stata presa da una telecamera perpendicolare al terreno. Questo algoritmo di rettifica è gi\'a stato utilizzato durante questo progetto\cite{Rettifica} per riuscire a trovare la linea nera sul terreno e riuscire così a pianificare il percorso.
+		La vista prospettica dell'immagine catturata distorce la forma reale della strada. L' Inverse Prospective Mapping è un processo che serve appunto per eliminare eventuali distorsioni, rimappando l'immagine attraverso una rototraslazione. Dopo l' IPM essa appare come se fosse stata presa da una telecamera perpendicolare al terreno. Questo algoritmo di rettifica è già stato utilizzato durante questo progetto\cite{Rettifica} per riuscire a trovare la linea nera sul terreno e riuscire così a pianificare il percorso.
 
 		A noi per\'o per calcolare la distanza dal cartello non serve rimappare tutta l'immagine ma solo un punto cioè il punto di strada dove il cartello è perpendicolare ad esso. Per fare ci\'o prima di tutto abbiamo bisogno di ricavare tale punto. Siccome non c'è modo di rilevare, oltre al cartello, anche l'altezza del suo supporto è stato deciso di appoggiare i cartelli a terra e di non tenerli sollevati. Così facendo trovare il punto sul terreno risulta molto pi\'u facile, basta infatti prendere il centro della base del cartello, trovando così dove si appoggia sul terreno e ottenendo il punto da noi desiderato.
 		\begin{figure}[!ht]
@@ -188,21 +190,41 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 			\includegraphics[width=0.8\textwidth]{img/rettifica}
 			\caption[Telecamera reale e virtuale]{A sinistra la camera telecamera reale con il suo campo di visione e al centro la telecamera virtuale perpendicolare al punto sul terreno dove appoggia il cartello.}
 		\end{figure}
-		Ora basta passare il punto all' algoritmo di rettifica. La rettifica crea una telecamera virtuale perpendicolare al terreno ad una altezza nota tenendo conto dell' angolo di quella reale  rispetto al terreno ci restituisce la x e la y del punto come se fosse stato preso da quella telecamera.
+		Ora basta passare il punto all' algoritmo di rettifica. La rettifica crea una telecamera virtuale perpendicolare al terreno ad una altezza nota. Tenendo conto dell' angolo della camera reale rispetto al terreno la rettifica ci restituisce la x e la y del punto nell'immagine come se fosse stata presa da quella telecamera.
 
 		\begin{figure}[!ht]
 			\centering
 			\includegraphics[width=0.8\textwidth]{img/rettifica2}
 			\caption[Distanza focale e distanza dal terreno]{f distanza focale dell'immagine, h l'altezza dell'immagine dal terreno.}
 		\end{figure}
-		Adesso abbiamo il nostro punto nell'immagine dall'alto e dobbiamo ricavare quello nella realt\'a. Per fare ci\'o come si nota nella figura 3.11 basta fare una semplice proporzione sia per la coordinata x che per la coordinata y
+		Adesso abbiamo il nostro punto nell'immagine dall'alto e dobbiamo ricavare quello nella realtà. Per fare ci\'o come si nota nella figura 3.11 basta fare una semplice proporzione sia per la coordinata x che per la coordinata y
 		\begin{align*}
 			xi : focal = x : h
 			\\
 			yi : focal = y : h
 		\end{align*}
-		Dove xi e yi sono le coordinate del punto nell'immagine rettificata. Focal è la distanza focale dell'obbiettivo e h è l'altezza della telecamera virtuale. Invece x e y sono le coordinate del punto nella realt\'a da calcolare e come si vede dall' immagine 3.10, nota l'inclinazione della telecamera, si calcola anche facilmente la posizione del cartello rispetto a quella del robot.
-		In pratica se si conosce la distanza del piano dell'oggetto, la posizione dell'oggetto nell'immagine e la distanza focale, allora si riesce a calcolare la distanza dell'oggetto. Infine bisogna sommare l'offset della telecamera rispetto al centro del robot.
+		Dove xi e yi sono le coordinate del punto nell'immagine rettificata. Focal è la distanza focale dell'obbiettivo e h è l'altezza della telecamera virtuale. Invece x e y sono le coordinate del punto nella realtà da calcolare sul piano del terreno che sono anche le coordinate di posizione ripetto al robot. In pratica se si conosce la distanza del piano dell'oggetto, la posizione dell'oggetto nell'immagine e la distanza focale, allora si riesce a calcolare la distanza dell'oggetto. Infine bisogna sommare l'offset della telecamera rispetto al centro del robot e abbiamo la posizione del segnale rispetto alla posizione del robot. Se si vuole sapere la distanza effettiva basta applicare il teorema di pittagora per ricavare la diagonale. Di seguito lo pseudo codice.
+
+		\begin{algorithm}[htp]
+		\SetAlgoLined
+		\SetKwFunction{algo}{computeDistance}
+		\SetKwProg{myalg}{Function}{}{}
+		\myalg{\algo{Point a}{}}{
+
+			$Point \ \ p \leftarrow rectifier.rettificaPunto(a,camera)$\;
+
+			$float \ \ focal = camera.getFocal()$\;
+			$Point \ \ x \leftarrow a.x * h / focal$\;
+			$Point \ \ y \leftarrow a.y * h / focal$\;
+
+			$x \leftarrow 0.1869 - y$\;
+			$y \leftarrow -0.0219 - x$\;
+
+			\KwRet{$sqrt(pow(x,2) + pow(y,2))$}\;
+
+		}
+		\caption{Pseudo codice dell'algoritmo di calcolo distanza}
+		\end{algorithm}
 
 	\subsection{Implementazione}
 		Per implementare l'algoritmo per il calcolo della distanza è stata utilizzata la libreria Eigen\footnote{\url{ http://eigen.tuxfamily.org/}} che offre funzioni per calcoli matematici necessari per l'algoritmo di rettifica delle immagini.

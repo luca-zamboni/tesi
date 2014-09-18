@@ -82,12 +82,12 @@ In questo capitolo verr\'a analizzato il codice l'algoritmo esistente e verrano 
 		\caption{Cartello riconosciuto}
 	\end{figure}
 
-\section{Analisi dati algoritmo}
+\section{Esperimenti eseguiti}
 
 	Adesso passiamo all' analisi prestazioni e precisione algoritmo.
 
 	Per prima cosa analizziamo la precisione dell'algoritmo con immagini prese a varie distanze, con angolature non superiori ai 15$^{\circ}$ e di giorno cio\'e con luce accettabile.
-	Questi sono i dati ricavati utilizzando cartelli con larghezza circa di un lato corto di un foglio A4.
+	Questi sono i dati ricavati utilizzando cartelli con larghezza circa di un lato corto di un foglio A4 posti tra i 1 e 4 metri dalla posizione della telecamera.
 
 	\begin{table}[h]
 		\centering
@@ -99,17 +99,24 @@ In questo capitolo verr\'a analizzato il codice l'algoritmo esistente e verrano 
 			3 metri & 60 \%                  & 0 \%   &	20 \% 	              \\
 			4 metri & 20 \%                  & 0 \%   &	0 \% 	             
 		\end{tabular}
+		\caption{Percentuale successo riconoscimento cartelli}
 	\end{table}
 
-    Da una prima analisi si evince che l'algoritmo ha delle difficolt\'a dovute alla distanza. Quello che si nota analizzando i dati della tabella \'e che l'algoritmo trova delle difficolt\'a a trovare ROI nell'immagine quando il cartello \'e posto a più di due metri di distanza. Inoltre ha difficolt\'a ancora maggiori quando ha trovato il cartello ma deve determinare di che tipo di segnale si tratta. Infatti anche in questo caso se si va oltre il metro la precisione cala drasticamente.
+    Da una prima analisi si evince che l'algoritmo ha delle difficolt\'a nel riconoscimento dovute alla distanza. Quello che si nota analizzando i dati della tabella \'e che l'algoritmo trova delle difficolt\'a a trovare ROI nell'immagine quando il cartello \'e posto a più di due metri di distanza. Inoltre ha difficolt\'a ancora maggiori quando ha trovato il cartello ma deve determinare di che tipo di segnale si tratta. Infatti anche in questo caso se si va oltre il metro la precisione cala drasticamente. Di seguito analizzeremo i dati relativi ai tempi di esecuzione.
 
-    mettere dati lentezza se ce la fai
+    \begin{figure}[!ht]
+		\centering
+		\includegraphics[width=0.9\textwidth]{img/grafico4}
+		\caption[Grafico tempi di esecuzione]{Grafico relativo ai tempi di esecuzione su BeagleBone}
+	\end{figure}
 
-\section{Conclusioni}
+	Analizzando il grafico si nota che l'algoritmo impiega mediamente 660 millisecondi. Facendo ulteriori analisi sui tempi delle sincogli funzioni si nota che la funzione che impiega il maggior tempo di esecuzione è l'individuazione del cartello nell'immagine in particolare il filtro di Canny. Infatti esso occupa circa il 50 - 60 \% del tempo impegato dall'algoritmo. La funzione di trasformazione prospettica ha un tempo trascurabile ed infine la funzione di riconoscimento segnale non ha un tempo di esecuzione trascurabile ma comunque ridotto rispetto al filtro di Canny. Da notare che comunque il tempo di esecuzione è relativo per ogni esecuzione dell'algoritmo perchè dipende da vari fattori come per esempio altri processi.
+
+\section{Considerazioni}
 
 	Un problema importante sul quale bisogna lavorare \'e che l'algoritmo non riesce a riconoscere i cartelli se questi sono posti a pi\'u di un metro di distanza. Questo implica che il robot deve andare lentissimo perch\'e un segnale abbia efficacia e che sia riconosciuto prima di averlo sorpassato. Un primo lavoro sta nel cercare di aumentre la distanza a cui vengono riconosciuti i cartelli.
 
-	Un altro dato importante rilevato nel analisi dei dati è la velocita di esecuzione dell' algoritmo. Esso impiega circa un secondo per riconoscere un segnale. Se per esempio il robot si sposta alla velocit\'a di 10 km/h esso riconosce il cartello solo dopo 1 secondo cio\'e quando il robot ha percorso 3 metri. Quindi si cerca di migliorare, cio\'e di ridurre il pi\'u possibile il tempo di esecuzione.
+	Un altro dato importante rilevato nel analisi dei dati è la velocita di esecuzione dell' algoritmo. Esso impiega circa 700 millisecondi per riconoscere un segnale. Se per esempio il robot si sposta alla velocit\'a di 10 km/h esso riconosce il cartello solo dopo 0.7 secondi cio\'e quando il robot ha percorso 2 metri che comparato alle distanze che compie il robot nell'ordine dei 10 metri questo risulta essere eccessivo. Quindi si cerca di migliorare, cio\'e di ridurre il pi\'u possibile il tempo di esecuzione.
 	
 	Nel capitolo successivo verranno proposti e analizzati dei metodi per aumentare la velocità di esecuzione dell' algoritmo e aumentare la precisione del riconoscimento di un cartello da una distsanza superiore al metro. Inoltre si implementa anche un metodo per calcolare la distanza dal cartello.
 
