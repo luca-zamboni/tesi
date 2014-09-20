@@ -24,7 +24,7 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 			\caption[Interno cartelli]{A sinistra l'interno di un cartello non riconosciuto, a destra invece uno riconosciuto}
 		\end{figure}
 		
-		Queste immagini sono l'interno di un cartello a distanza di 3 metri. Come si può vedere quella a sinistra è poco nitida o comunque poco definita e non viene riconosiuta. Questo è dovuto al fatto che alla traformata di hough per riconoscere i cerchi serve una immagine nitida.
+		Queste immagini sono l'interno di un cartello a distanza di 3 metri. Come si può vedere quella a sinistra è poco nitida o comunque poco definita e non viene riconosiuta. Questo è dovuto al fatto che alla trasformata di Hough per riconoscere i cerchi serve una immagine nitida.
 
 		\begin{figure}[!ht]
 			\centering
@@ -81,7 +81,7 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 		
 		A questo punto, l'immagine viene ingrandita a una dimensione nota e si tagliano i bordi neri che potrebbero esserci come rimanenze del bordo del cartello e si taglia anche la parte bianca attorno alla griglia di modo che rimanga solamente la figura interna. Per tagliare i bordi neri si prendono in considerazione i pixel esterni che formano la cornice. Se nella cornice è presente almeno un pixel nero allora la si elimina e si prende in considerazione la nuova cornice eseguendo il passo precedente fino al momento che la cornice è formata da soli punti bianchi. A questo punto si taglia la parte bianca attorno alla figura. Per eliminarla si esegue un procedimento analogo solo che in questo caso si taglia il bordo solo se la cornice ha i pixel colorati tutti di bianco. Il taglio dei bordi consente di estrarre la figura interna al cartello ma serve anche come filtro a falsi cartelli riconosciuti come tali dai passi precedenti dall'algoritmo. Un cartello non è tale con molta probabilità verrà tagliato  tutto restituendo solo un pixel quando si taglia il nero perchè a meno che non abbia bordi bianchi esso continuerà a trovare del nero sul bordo fino a superare la grandezza minima dell'interno del cartello impostata al 70\% della larghezza dell'algoritmo.
 		
-		Adesso si portano sia i cartelli che l'immagine interna al cartello a una grandezza uguale. A questo punto si ha solo la griglia interna al cartello e si passa all'effettivo riconoscimento di esso. Per identificare la griglia interna si esegue un semplice pattern matching fra cartelli e parte interna che cartello che vogliamo riconoscere. Per fare pattern matching basta fare uno xor pixel a pixel tra le due immagini da confrontare. Se un cartello ha una percentuale di pixel corrispondenti pi\'u alta degli altri e pi\'u alta di una soglia impostata del 70\% verrà riconosciuto come cartello corrispondente.
+		Adesso si portano sia i cartelli che l'immagine interna al cartello ad una grandezza uguale. A questo punto si ha solo la griglia interna al cartello e si passa all'effettivo riconoscimento di esso. Per identificare la griglia interna si esegue un semplice pattern matching fra cartelli e parte interna che cartello che vogliamo riconoscere. Per fare pattern matching basta fare uno xor pixel a pixel tra le due immagini da confrontare. Se un cartello ha una percentuale di pixel corrispondenti pi\'u alta degli altri e pi\'u alta di una soglia impostata del 70\% verrà riconosciuto come cartello corrispondente.
 		
 
 \section{Vanishing Point}
@@ -97,7 +97,7 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 			\centering
 			\includegraphics[width=0.49\textwidth]{img/wherefind}
 			\includegraphics[width=0.49\textwidth]{img/wherefind2}
-			\caption[Area ricerca cartello]{In rosso la linea dell'orizzonte e in verde la regione dell'immagine dove dovrebbe essere cercato il cartello}
+			\caption[Area ricerca cartello]{Due esempi di immagini. In rosso la linea dell'orizzonte e in verde la regione dell'immagine dove dovrebbe essere cercato il cartello}
 		\end{figure}
 
 
@@ -123,7 +123,7 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 			\item \textbf{p} p è la precisione con cui è calcolato il segmento
 			\item \textbf{logNfa} $ - \log_{10}(NFA)$
 		\end{enumerate}
-		Successivamente per ogni segmento si calcola il punto medio di esso e la pendenza. I segmenti successivamente vengono filtrati.
+		Successivamente per ogni segmento si calcola il suo punto medio  e la pendenza. I segmenti successivamente vengono filtrati.
 		I segmenti devono:
 		\begin{itemize}
 			\item Essere pi\'u lunghi di una certa lunghezza, impostata al 10\% della larghezza dell'immagine, altrimenti potrebbero essere solo rumore o oggetti al bordo della strada.
@@ -162,7 +162,7 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 	\subsection{Implementazione}
 		L'algoritmo per il calcolo del punto sull'orizzonte viene chiamato prima di fare qualsiasi operazione sull' immagine. L'algoritmo, una volta calcolato il punto sull'orizzonte, controlla che essso sia nell'immagine perchè il punto sull'orizzonte potrebbe essere anche esterno ad essa. Se questo è esterno non si prende in considerazione, altrimenti si taglia l'immagine nel suo intorno. Il taglio viene eseguito tenendo una percentuale di pixel rispetto alla larghezza dell' immagine. Questa percentuale è fissata al 60\% rispetto alla larghezza e anche all'altezza. Siccome il punto sull'orizzonte è quasi sempre calcolato nella parte alta come nella figura 3.2 la parte tagliata in altezza sarà quasi sempre minore al 60\% riducendo cos\'i la superfice da analizzare successivamente aumentando le prestazioni. 
 
-		Il calcolo del vanishing poin,t come vedremo nella prossima sezione, ha un costo computazionale parecchio elevato di circa un secondo quindi è stato scelto di calcolarlo solo sulla prima immagine quando si arriva in rettilineo. Successivamente se si trova il cartello nell'intorno del punto sull'orizzonte allora si passa alla prossima immagine e su di esso non si ricalcola tenendo quello precedente, altrimenti si cerca il cartello in tutta l'immagine e si cercherà di ricalcolare il vanishing point nel prossimo frame.
+		Il calcolo del vanishing point come vedremo nella prossima sezione, ha un costo computazionale parecchio elevato di circa un secondo quindi è stato scelto di calcolarlo solo sulla prima immagine quando si arriva in rettilineo. Successivamente se si trova il cartello nell'intorno del punto sull'orizzonte allora si passa alla prossima immagine e su di esso non si ricalcola tenendo quello precedente, altrimenti si cerca il cartello in tutta l'immagine e si cercherà di ricalcolare il vanishing point nel prossimo frame.
 
 		\begin{figure}[!ht]
 			\centering
@@ -202,7 +202,7 @@ In questo capitolo si espongono degli algoritmi per migliorare prestazioni e rob
 			\\
 			yi : focal = y : h
 		\end{align*}
-		Dove xi e yi sono le coordinate del punto nell'immagine rettificata. Focal è la distanza focale dell'obbiettivo e h è l'altezza della telecamera virtuale. Invece x e y sono le coordinate del punto nella realtà da calcolare sul piano del terreno che sono anche le coordinate di posizione ripetto al robot. In pratica se si conosce la distanza del piano dell'oggetto, la posizione dell'oggetto nell'immagine e la distanza focale, allora si riesce a calcolare la distanza dell'oggetto. Infine bisogna sommare l'offset della telecamera rispetto al centro del robot e abbiamo la posizione del segnale rispetto alla posizione del robot. Se si vuole sapere la distanza effettiva basta applicare il teorema di pittagora per ricavare la diagonale. Di seguito lo pseudo codice.
+		Dove xi e yi sono le coordinate del punto nell'immagine rettificata. Focal è la distanza focale dell'obbiettivo e h è l'altezza della telecamera virtuale. Invece x e y sono le coordinate del punto nella realtà da calcolare sul piano del terreno che sono anche le coordinate di posizione ripetto al robot. In pratica se si conosce la distanza del piano dell'oggetto, la posizione dell'oggetto nell'immagine e la distanza focale, allora si riesce a calcolare la distanza dell'oggetto. Infine bisogna sommare l'offset della telecamera rispetto al centro del robot e abbiamo la posizione del segnale rispetto alla posizione del robot. Se si vuole sapere la distanza effettiva basta applicare il teorema di Pitagora per ricavare la diagonale. Di seguito lo pseudo codice.
 
 		\begin{algorithm}[htp]
 		\SetAlgoLined
